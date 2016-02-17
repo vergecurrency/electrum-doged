@@ -301,7 +301,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         except Exception, e:
             give_error(e)
         try:
-            self.get_client().get_address('DogecoinDark', address_n, True)
+            self.get_client().get_address('Verge', address_n, True)
         except Exception, e:
             give_error(e)
         finally:
@@ -316,7 +316,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         except Exception, e:
             give_error(e)
         try:
-            msg_sig = self.get_client().sign_message('DogecoinDark', address_n, message)
+            msg_sig = self.get_client().sign_message('Verge', address_n, message)
         except Exception, e:
             give_error(e)
         finally:
@@ -333,7 +333,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         inputs = self.tx_inputs(tx)
         outputs = self.tx_outputs(tx)
         try:
-            signed_tx = self.get_client().sign_tx('DogecoinDark', inputs, outputs)[1]
+            signed_tx = self.get_client().sign_tx('Verge', inputs, outputs)[1]
         except Exception, e:
             give_error(e)
         finally:

@@ -1,5 +1,5 @@
 merchant.py is a daemon that manages payments for a web server. It
-creates DogecoinDark addresses using a master public key (so you do not
+creates Verge addresses using a master public key (so you do not
 leave your private keys on the server), detects when payments are
 received and notifies your web application.
 
@@ -9,7 +9,7 @@ The workflow goes like this:
    contains an amount to be paid, a number of confirmations, and an
    expiration period in hours.
 
- - the daemon answers with a DogecoinDark address, where the customer needs
+ - the daemon answers with a Verge address, where the customer needs
    to send the coins.
 
  - later, the daemon will send a POST to the webserver, to notify that

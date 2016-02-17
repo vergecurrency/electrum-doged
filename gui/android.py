@@ -134,7 +134,7 @@ def make_layout(s, scrollable = False):
 
         <TextView
           android:id="@+id/textElectrum"
-          android:text="Electrum-DOGED"
+          android:text="Electrum-XVG"
           android:textSize="7pt"
           android:textColor="#ff4444ff"
           android:gravity="left"
@@ -440,7 +440,7 @@ def pay_to(recipient, amount, label):
     else:
         password = None
 
-    droid.dialogCreateSpinnerProgress("Electrum-DOGED", "signing transaction...")
+    droid.dialogCreateSpinnerProgress("Electrum-XVG", "signing transaction...")
     droid.dialogShow()
 
     try:
@@ -474,7 +474,7 @@ def make_new_contact():
     if r:
         data = str(r['extras']['SCAN_RESULT']).strip()
         if data:
-            if re.match('^dogecoindark:', data):
+            if re.match('^VERGE:', data):
                 address, _, _, _, _ = util.parse_URI(data)
             elif is_address(data):
                 address = data
@@ -605,7 +605,7 @@ def payto_loop():
                     data = str(r['extras']['SCAN_RESULT']).strip()
                     if data:
                         print "data", data
-                        if re.match('^dogecoindarkcoin:', data):
+                        if re.match('^VERGEcoin:', data):
                             payto, amount, label, message, _ = util.parse_URI(data)
                             if amount:
                                 amount = str(amount/100000000)
@@ -660,7 +660,7 @@ def receive_loop():
             modal_dialog('URI copied to clipboard', receive_URI)
 
         elif event["name"]=="amount":
-            amount = modal_input('Amount', 'Amount you want to receive (in DOGED). ', format_satoshis(receive_amount) if receive_amount else None, "numberDecimal")
+            amount = modal_input('Amount', 'Amount you want to receive (in XVG). ', format_satoshis(receive_amount) if receive_amount else None, "numberDecimal")
             if amount is not None:
                 receive_amount = int(100000000 * Decimal(amount)) if amount else None
                 out = 'receive'
@@ -941,7 +941,7 @@ class ElectrumGui:
                 exit()
 
             msg = "Creating wallet" if action == 'create' else "Restoring wallet"
-            droid.dialogCreateSpinnerProgress("Electrum-DOGED", msg)
+            droid.dialogCreateSpinnerProgress("Electrum-XVG", msg)
             droid.dialogShow()
             wallet.start_threads(network)
             if action == 'restore':

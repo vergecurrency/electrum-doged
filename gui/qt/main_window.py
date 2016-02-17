@@ -212,7 +212,7 @@ class ElectrumWindow(QMainWindow):
         self.dummy_address = a[0] if a else None
         self.accounts_expanded = self.wallet.storage.get('accounts_expanded',{})
         self.current_account = self.wallet.storage.get("current_account", None)
-        title = 'Electrum-DOGED %s  -  %s' % (self.wallet.electrum_version, self.wallet.basename())
+        title = 'Electrum-XVG %s  -  %s' % (self.wallet.electrum_version, self.wallet.basename())
         if self.wallet.is_watching_only():
             title += ' [%s]' % (_('watching only'))
         self.setWindowTitle( title )
@@ -403,20 +403,20 @@ class ElectrumWindow(QMainWindow):
 
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
-        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://electrum-doged.space"))
+        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://electrum-verge.xyz"))
         help_menu.addSeparator()
-        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://electrum-doged.space")).setShortcut(QKeySequence.HelpContents)
+        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://electrum-verge.xyz")).setShortcut(QKeySequence.HelpContents)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
 
         self.setMenuBar(menubar)
 
     def show_about(self):
-        QMessageBox.about(self, "Electrum-DOGED",
-            _("Version")+" %s" % (self.wallet.electrum_version) + "\n\n" + _("Electrum's focus is speed, with low resource usage and simplifying DogecoinDark. You do not need to perform regular backups, because your wallet can be recovered from a secret phrase that you can memorize or write on paper. Startup times are instant because it operates in conjunction with high-performance servers that handle the most complicated parts of the DogecoinDark system."))
+        QMessageBox.about(self, "Electrum-XVG",
+            _("Version")+" %s" % (self.wallet.electrum_version) + "\n\n" + _("Electrum's focus is speed, with low resource usage and simplifying Verge. You do not need to perform regular backups, because your wallet can be recovered from a secret phrase that you can memorize or write on paper. Startup times are instant because it operates in conjunction with high-performance servers that handle the most complicated parts of the Verge system."))
 
     def show_report_bug(self):
-        QMessageBox.information(self, "Electrum-DOGED - " + _("Reporting Bugs"),
-            _("Please report any bugs as issues on github:")+" <a href=\"https://github.com/doged/electrum-doged/issues\">https://github.com/doged/electrum-doged/issues</a>")
+        QMessageBox.information(self, "Electrum-XVG - " + _("Reporting Bugs"),
+            _("Please report any bugs as issues on github:")+" <a href=\"https://github.com/vergecurrency/electrum-xvg/issues\">https://github.com/vergecurrency/electrum-xvg/issues</a>")
 
 
     def notify_transactions(self):
@@ -448,7 +448,7 @@ class ElectrumWindow(QMainWindow):
 
     def notify(self, message):
         if self.tray:
-            self.tray.showMessage("Electrum-DOGED", message, QSystemTrayIcon.Information, 20000)
+            self.tray.showMessage("Electrum-XVG", message, QSystemTrayIcon.Information, 20000)
 
 
 
@@ -498,9 +498,9 @@ class ElectrumWindow(QMainWindow):
         if self.decimal_point == 0:
             return 'bits'
         if self.decimal_point == 3:
-            return 'mDOGED'
+            return 'mXVG'
         if self.decimal_point == 6:
-            return 'DOGED'
+            return 'XVG'
         raise Exception('Unknown base unit')
 
     def update_status(self):
@@ -882,7 +882,7 @@ class ElectrumWindow(QMainWindow):
         self.amount_e = BTCAmountEdit(self.get_decimal_point)
         self.payto_e = PayToEdit(self)
         msg = _('Recipient of the funds.') + '\n\n'\
-              + _('You may enter a DogecoinDark address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a DogecoinDark address)')
+              + _('You may enter a Verge address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Verge address)')
         payto_label = HelpLabel(_('Pay to'), msg)
         grid.addWidget(payto_label, 1, 0)
         grid.addWidget(self.payto_e, 1, 1, 1, 3)
@@ -915,7 +915,7 @@ class ElectrumWindow(QMainWindow):
         grid.addWidget(amount_label, 4, 0)
         grid.addWidget(self.amount_e, 4, 1, 1, 2)
 
-        msg = _('DogecoinDark transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
+        msg = _('Verge transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
               + _('The amount of fee can be decided freely by the sender. However, transactions with low fees take more time to be processed.') + '\n\n'\
               + _('A suggested fee is automatically added to this field. You may override it. The suggested fee increases with the size of the transaction.')
         self.fee_e_label = HelpLabel(_('Fee'), msg)
@@ -1077,10 +1077,10 @@ class ElectrumWindow(QMainWindow):
 
         for _type, addr, amount in outputs:
             if addr is None:
-                QMessageBox.warning(self, _('Error'), _('DogecoinDark Address is None'), _('OK'))
+                QMessageBox.warning(self, _('Error'), _('Verge Address is None'), _('OK'))
                 return
             if _type == 'address' and not bitcoin.is_address(addr):
-                QMessageBox.warning(self, _('Error'), _('Invalid DogecoinDark Address'), _('OK'))
+                QMessageBox.warning(self, _('Error'), _('Invalid Verge Address'), _('OK'))
                 return
             if amount is None:
                 QMessageBox.warning(self, _('Error'), _('Invalid Amount'), _('OK'))
@@ -1241,7 +1241,7 @@ class ElectrumWindow(QMainWindow):
         try:
             address, amount, label, message, request_url = util.parse_URI(URI)
         except Exception as e:
-            QMessageBox.warning(self, _('Error'), _('Invalid dogecoindark URI:') + '\n' + str(e), _('OK'))
+            QMessageBox.warning(self, _('Error'), _('Invalid VERGE URI:') + '\n' + str(e), _('OK'))
             return
 
         self.tabs.setCurrentIndex(1)
@@ -1773,7 +1773,7 @@ class ElectrumWindow(QMainWindow):
         vbox.addWidget(QLabel(_('Account name')+':'))
         e = QLineEdit()
         vbox.addWidget(e)
-        msg = _("Note: Newly created accounts are 'pending' until they receive dogecoindarks.") + " " \
+        msg = _("Note: Newly created accounts are 'pending' until they receive VERGEs.") + " " \
             + _("You will need to wait for 2 confirmations until the correct balance is displayed and more addresses are created for that account.")
         l = QLabel(msg)
         l.setWordWrap(True)
@@ -2124,7 +2124,7 @@ class ElectrumWindow(QMainWindow):
         if not data:
             return
         # if the user scanned a bitcoin URI
-        if data.startswith("dogecoindark:"):
+        if data.startswith("VERGE:"):
             self.pay_from_URI(data)
             return
         # else if the user scanned an offline signed tx
@@ -2532,22 +2532,22 @@ class ElectrumWindow(QMainWindow):
         fee_e.editingFinished.connect(on_fee)
         widgets.append((fee_label, fee_e, fee_help))
 
-        units = ['DOGED', 'mDOGED', 'bits']
+        units = ['XVG', 'mXVG', 'bits']
         unit_label = QLabel(_('Base unit') + ':')
         unit_combo = QComboBox()
         unit_combo.addItems(units)
         unit_combo.setCurrentIndex(units.index(self.base_unit()))
         msg = _('Base unit of your wallet.')\
-              + '\n1BTC=1000mDOGED.\n' \
+              + '\n1BTC=1000mXVG.\n' \
               + _(' These settings affects the fields in the Send tab')+' '
         unit_help = HelpButton(msg)
         def on_unit(x):
             unit_result = units[unit_combo.currentIndex()]
             if self.base_unit() == unit_result:
                 return
-            if unit_result == 'DOGED':
+            if unit_result == 'XVG':
                 self.decimal_point = 8
-            elif unit_result == 'mDOGED':
+            elif unit_result == 'mXVG':
                 self.decimal_point = 5
             elif unit_result == 'bits':
                 self.decimal_point = 2

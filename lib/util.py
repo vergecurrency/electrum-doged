@@ -95,9 +95,9 @@ def user_dir():
     if "HOME" in os.environ:
         return os.path.join(os.environ["HOME"], ".electrum-doged")
     elif "APPDATA" in os.environ:
-        return os.path.join(os.environ["APPDATA"], "Electrum-DOGED")
+        return os.path.join(os.environ["APPDATA"], "Electrum-XVG")
     elif "LOCALAPPDATA" in os.environ:
-        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-DOGED")
+        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-XVG")
     elif 'ANDROID_DATA' in os.environ:
         return "/sdcard/electrum-doged/"
     else:
@@ -222,7 +222,7 @@ def parse_URI(uri):
         return uri, None, None, None, None
 
     u = urlparse.urlparse(uri)
-    assert u.scheme == 'dogecoindark'
+    assert u.scheme == 'VERGE'
 
     address = u.path
 
@@ -272,7 +272,7 @@ def create_URI(addr, amount, message):
         if type(message) == unicode:
             message = message.encode('utf8')
         query.append('message=%s'%urllib.quote(message))
-    p = urlparse.ParseResult(scheme='dogecoindark', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urlparse.ParseResult(scheme='VERGE', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return urlparse.urlunparse(p)
 
 

@@ -7,7 +7,7 @@ from electrum_doged.network import filter_protocol, parse_servers
 def get_peers():
     # 1. start interface and wait for connection
     q = Queue.Queue()
-    interface = electrum.Interface('electrum-doged.space:50002:s', q)
+    interface = electrum.Interface('electrum-verge.xyz:50001:s', q)
     interface.start()
     i, r = q.get()
     if not interface.is_connected():

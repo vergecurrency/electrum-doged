@@ -29,7 +29,7 @@ from electrum_doged.bitcoin import is_valid
 from electrum_doged import WalletStorage, Wallet
 
 Gdk.threads_init()
-APP_NAME = "Electrum-DOGED"
+APP_NAME = "Electrum-XVG"
 import platform
 MONOSPACE_FONT = 'Lucida Console' if platform.system() == 'Windows' else 'monospace'
 
@@ -457,7 +457,7 @@ class ElectrumWindow:
         self.num_zeros = int(self.config.get('num_zeros',0))
         self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         self.window.connect('key-press-event', self.on_key)
-        title = 'Electrum-DOGED ' + self.wallet.electrum_version + '  -  ' + self.config.path
+        title = 'Electrum-XVG ' + self.wallet.electrum_version + '  -  ' + self.config.path
         if not self.wallet.seed: title += ' [seedless]'
         self.window.set_title(title)
         self.window.connect("destroy", Gtk.main_quit)
@@ -786,7 +786,7 @@ class ElectrumWindow:
             to_address = r
 
         if not is_valid(to_address):
-            self.show_message( "invalid dogecoindark address:\n"+to_address)
+            self.show_message( "invalid VERGE address:\n"+to_address)
             return
 
         try:

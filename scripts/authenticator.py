@@ -90,7 +90,7 @@ def make_layout(s):
 
         <TextView
           android:id="@+id/textElectrum"
-          android:text="Electrum-DOGED Authenticator"
+          android:text="Electrum-XVG Authenticator"
           android:textSize="7pt"
           android:textColor="#ff4444ff"
           android:gravity="left"

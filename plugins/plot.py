@@ -108,7 +108,7 @@ class Plugin(BasePlugin):
         ax.add_artist(anchored_box)
 
 
-        plt.ylabel('mDOGED')
+        plt.ylabel('mXVG')
         plt.xlabel('Dates')
         xfmt = md.DateFormatter('%Y-%m-%d')
         ax.xaxis.set_major_formatter(xfmt)

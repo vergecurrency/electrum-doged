@@ -48,8 +48,8 @@ if __name__ == '__main__':
     os.system("pyrcc4 icons.qrc -o gui/qt/icons_rc.py")
     os.system("python setup.py sdist --format=zip,gztar")
     
-    _tgz="Electrum-DOGED-%s.tar.gz"%version
-    _zip="Electrum-DOGED-%s.zip"%version
+    _tgz="Electrum-XVG-%s.tar.gz"%version
+    _zip="Electrum-XVG-%s.zip"%version
 
     os.chdir("dist")
     password = getpass.getpass("Password:")

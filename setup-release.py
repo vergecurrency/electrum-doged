@@ -1,5 +1,5 @@
 """
-py2app/py2exe build script for Electrum DogecoinDark
+py2app/py2exe build script for Electrum Verge
 
 Usage (Mac OS X):
      python setup.py py2app
@@ -18,7 +18,7 @@ from lib.util import print_error
 from lib.version import ELECTRUM_VERSION as version
 
 
-name = "Electrum-DOGED"
+name = "Electrum-XVG"
 mainscript = 'electrum-doged'
 
 if sys.version_info[:3] < (2, 6, 0):

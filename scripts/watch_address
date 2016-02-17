@@ -7,7 +7,7 @@ import electrum_doged as electrum
 try:
     addr = sys.argv[1]
 except Exception:
-    print "usage: watch_address <dogecoindark_address>"
+    print "usage: watch_address <VERGE_address>"
     sys.exit(1)
 
 # start network

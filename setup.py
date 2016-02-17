@@ -26,7 +26,7 @@ if platform.system() in [ 'Linux', 'FreeBSD', 'DragonFly']:
 
 
 setup(
-    name="Electrum-DOGED",
+    name="Electrum-XVG",
     version=version.ELECTRUM_VERSION,
     install_requires=[
         'slowaes>=0.1a1',
@@ -61,10 +61,10 @@ setup(
     },
     scripts=['electrum-doged'],
     data_files=data_files,
-    description="Lightweight DogecoinDark Wallet",
+    description="Lightweight Verge Wallet",
     author="dogedDEV",
     author_email="dogedcoin@twitter",
     license="GNU GPLv3",
     url="http://electrum-doged.space",
-    long_description="""Lightweight DogecoinDark Wallet"""
+    long_description="""Lightweight Verge Wallet"""
 )

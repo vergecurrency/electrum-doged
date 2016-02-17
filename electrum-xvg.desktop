@@ -2,16 +2,16 @@
 # sudo desktop-file-install electrum-doged.desktop
 
 [Desktop Entry]
-Comment=Lightweight DogecoinDark Client
+Comment=Lightweight Verge Client
 Exec=electrum-doged %u
-GenericName[en_US]=Electrum-DOGED
-GenericName=Electrum-DOGED
+GenericName[en_US]=Electrum-XVG
+GenericName=Electrum-XVG
 Icon=electrum-doged
-Name[en_US]=Electrum DogecoinDark Wallet
-Name=Electrum DogecoinDark Wallet
+Name[en_US]=Electrum Verge Wallet
+Name=Electrum Verge Wallet
 Categories=Network;
 StartupNotify=false
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/dogecoindark;
+MimeType=x-scheme-handler/VERGE;
 

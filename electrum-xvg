@@ -212,12 +212,12 @@ if __name__ == '__main__':
     if len(args) == 0:
         url = None
         cmd = 'gui'
-    elif len(args) == 1 and re.match('^dogecoindark:', args[0]):
+    elif len(args) == 1 and re.match('^VERGE:', args[0]):
         url = args[0]
         cmd = 'gui'
     elif len(args) == 1 and args[0] not in known_commands and os.path.exists(args[0]):
         # fixme: assume this is a payment request
-        url = "dogecoindark:?r=file://"+ os.path.join(os.getcwd(), args[0])
+        url = "VERGE:?r=file://"+ os.path.join(os.getcwd(), args[0])
         cmd = 'gui'
     else:
         cmd = args[0]
