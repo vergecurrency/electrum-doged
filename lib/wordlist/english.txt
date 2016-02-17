@@ -27013,7 +27013,7 @@ dogbush
 dogcart
 dogdoms
 dogears
-vergeom
+dogedom
 dogface
 dogfall
 dogfish

@@ -1,12 +1,12 @@
 # If you want electrum to appear in a linux app launcher ("start menu"), install this by doing:
-# sudo desktop-file-install electrum-verge.desktop
+# sudo desktop-file-install electrum-doged.desktop
 
 [Desktop Entry]
 Comment=Lightweight Verge Client
-Exec=electrum-verge %u
+Exec=electrum-doged %u
 GenericName[en_US]=Electrum-XVG
 GenericName=Electrum-XVG
-Icon=electrum-verge
+Icon=electrum-doged
 Name[en_US]=Electrum Verge Wallet
 Name=Electrum Verge Wallet
 Categories=Network;

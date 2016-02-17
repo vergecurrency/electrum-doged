@@ -20,8 +20,8 @@ data_files = []
 if platform.system() in [ 'Linux', 'FreeBSD', 'DragonFly']:
     usr_share = os.path.join(sys.prefix, "share")
     data_files += [
-        (os.path.join(usr_share, 'applications/'), ['electrum-verge.desktop']),
-        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-verge.png'])
+        (os.path.join(usr_share, 'applications/'), ['electrum-doged.desktop']),
+        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-doged.png'])
     ]
 
 
@@ -40,17 +40,17 @@ setup(
         'dnspython',
     ],
     package_dir={
-        'electrum_verge': 'lib',
-        'electrum_verge_gui': 'gui',
-        'electrum_verge_plugins': 'plugins',
+        'electrum_doged': 'lib',
+        'electrum_doged_gui': 'gui',
+        'electrum_doged_plugins': 'plugins',
     },
-    packages=['electrum_verge','electrum_verge_gui','electrum_verge_gui.qt','electrum_verge_plugins'],
+    packages=['electrum_doged','electrum_doged_gui','electrum_doged_gui.qt','electrum_doged_plugins'],
     package_data={
-        'electrum_verge': [
+        'electrum_doged': [
             'wordlist/*.txt',
             'locale/*/LC_MESSAGES/electrum.mo',
         ],
-        'electrum_verge_gui': [
+        'electrum_doged_gui': [
             "qt/themes/cleanlook/name.cfg",
             "qt/themes/cleanlook/style.css",
             "qt/themes/sahara/name.cfg",
@@ -59,12 +59,12 @@ setup(
             "qt/themes/dark/style.css",
         ]
     },
-    scripts=['electrum-verge'],
+    scripts=['electrum-doged'],
     data_files=data_files,
     description="Lightweight Verge Wallet",
-    author="vergeDEV",
-    author_email="vergecoin@twitter",
+    author="dogedDEV",
+    author_email="dogedcoin@twitter",
     license="GNU GPLv3",
-    url="http://electrum-verge.space",
+    url="http://electrum-doged.space",
     long_description="""Lightweight Verge Wallet"""
 )

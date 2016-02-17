@@ -19,10 +19,10 @@ import re
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from electrum_verge_gui.qt.util import *
-from electrum_verge.plugins import BasePlugin, hook
-from electrum_verge.util import print_error
-from electrum_verge.i18n import _
+from electrum_doged_gui.qt.util import *
+from electrum_doged.plugins import BasePlugin, hook
+from electrum_doged.util import print_error
+from electrum_doged.i18n import _
 
 
 # Import all of the rdtypes, as py2app and similar get confused with the dnspython
@@ -176,7 +176,7 @@ class Plugin(BasePlugin):
         '''Resolve OpenAlias address using url.'''
         self.print_error('[OA] Attempting to resolve OpenAlias data for ' + url)
 
-        prefix = 'verge'
+        prefix = 'doged'
         retries = 3
         err = None
         for i in range(0, retries):

@@ -19,8 +19,8 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
-from electrum_verge.i18n import _
-from electrum_verge import mnemonic
+from electrum_doged.i18n import _
+from electrum_doged import mnemonic
 
 from util import *
 from qrtextedit import ShowQRTextEdit, ScanQRTextEdit

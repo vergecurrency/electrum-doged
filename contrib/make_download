@@ -18,14 +18,14 @@ files = {
     'tgz': "Electrum-XVG-%s.tar.gz" % version,
     'zip': "Electrum-XVG-%s.zip" % version,
     'mac': "electrum-XVG-%s.dmg" % version_mac,
-    'win': "electrum-verge-%s.exe" % version_win,
-    'win_setup': "electrum-verge-%s-setup.exe" % version_win,
-    'win_portable': "electrum-verge-%s-portable.exe" % version_win,
+    'win': "electrum-doged-%s.exe" % version_win,
+    'win_setup': "electrum-doged-%s-setup.exe" % version_win,
+    'win_portable': "electrum-doged-%s-portable.exe" % version_win,
 }
 
 for k, n in files.items():
     path = "binaries/%s"%n
-    link = "https://electrum-verge.space/download/%s"%n
+    link = "https://electrum-doged.space/download/%s"%n
     if not os.path.exists(path):
         os.system("wget -q %s -O %s" % (link, path))
     if not os.path.getsize(path):

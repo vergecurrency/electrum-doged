@@ -22,7 +22,7 @@ from qrtextedit import ScanQRTextEdit
 
 import re
 from decimal import Decimal
-from electrum_verge import bitcoin
+from electrum_doged import bitcoin
 
 RE_ADDRESS = '[1-9A-HJ-NP-Za-km-z]{26,}'
 RE_ALIAS = '(.*?)\s*\<([1-9A-HJ-NP-Za-km-z]{26,})\>'
@@ -165,7 +165,7 @@ class PayToEdit(ScanQRTextEdit):
         return len(self.lines()) > 1
 
     def paytomany(self):
-        from electrum_verge.i18n import _
+        from electrum_doged.i18n import _
         self.setText("\n\n\n")
         self.update_size()
         msg = '\n'.join([

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # You probably need to update only this link
-ELECTRUM_URL=http://electrum-verge.space/download/electrum-verge.tar.gz
+ELECTRUM_URL=http://electrum-doged.space/download/electrum-doged.tar.gz
 NAME_ROOT=electrum-1.6.1
 
 # These settings probably don't need any change

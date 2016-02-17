@@ -32,12 +32,12 @@ sys.path.insert(0, os.path.join(script_dir, 'packages'))
 
 import qrcode
 
-imp.load_module('electrum_verge', *imp.find_module('lib'))
+imp.load_module('electrum_doged', *imp.find_module('lib'))
 
-from electrum_verge import SimpleConfig, Wallet, WalletStorage, format_satoshis
-from electrum_verge import util
-from electrum_verge.transaction import Transaction
-from electrum_verge.bitcoin import base_encode, base_decode
+from electrum_doged import SimpleConfig, Wallet, WalletStorage, format_satoshis
+from electrum_doged import util
+from electrum_doged.transaction import Transaction
+from electrum_doged.bitcoin import base_encode, base_decode
 
 def modal_dialog(title, msg = None):
     droid.dialogCreateAlert(title,msg)
@@ -160,7 +160,7 @@ def add_menu():
 def make_bitmap(data):
     # fixme: this is highly inefficient
     import qrcode
-    from electrum_verge import bmp
+    from electrum_doged import bmp
     qr = qrcode.QRCode()
     qr.add_data(data)
     bmp.save_qrcode(qr,"/sdcard/sl4a/qrcode.bmp")
@@ -174,7 +174,7 @@ class Authenticator:
     def __init__(self):
         global wallet
         self.qr_data = None
-        storage = WalletStorage('/sdcard/electrum-verge/authenticator')
+        storage = WalletStorage('/sdcard/electrum-doged/authenticator')
         if not storage.file_exists:
 
             action = self.restore_or_create()

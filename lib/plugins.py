@@ -53,11 +53,11 @@ def init_plugins(config, is_local, is_gui):
     global plugins, descriptions, loader
     if is_local:
         fp, pathname, description = imp.find_module('plugins')
-        electrum_plugins = imp.load_module('electrum_verge_plugins', fp, pathname, description)
-        loader = lambda name: imp.load_source('electrum_verge_plugins.' + name, os.path.join(pathname, name + '.py'))
+        electrum_plugins = imp.load_module('electrum_doged_plugins', fp, pathname, description)
+        loader = lambda name: imp.load_source('electrum_doged_plugins.' + name, os.path.join(pathname, name + '.py'))
     else:
-        electrum_plugins = __import__('electrum_verge_plugins')
-        loader = lambda name: __import__('electrum_verge_plugins.' + name, fromlist=['electrum_verge_plugins'])
+        electrum_plugins = __import__('electrum_doged_plugins')
+        loader = lambda name: __import__('electrum_doged_plugins.' + name, fromlist=['electrum_doged_plugins'])
 
     def register_wallet_type(name):
         # fixme: load plugins only if really needed

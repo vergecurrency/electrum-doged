@@ -1,7 +1,7 @@
-from electrum_verge.plugins import BasePlugin, hook
-from electrum_verge_gui.qt.util import WaitingDialog, EnterButton
-from electrum_verge.util import print_msg, print_error
-from electrum_verge.i18n import _
+from electrum_doged.plugins import BasePlugin, hook
+from electrum_doged_gui.qt.util import WaitingDialog, EnterButton
+from electrum_doged.util import print_msg, print_error
+from electrum_doged.i18n import _
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *

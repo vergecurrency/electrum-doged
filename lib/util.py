@@ -93,13 +93,13 @@ def profiler(func):
 
 def user_dir():
     if "HOME" in os.environ:
-        return os.path.join(os.environ["HOME"], ".electrum-verge")
+        return os.path.join(os.environ["HOME"], ".electrum-doged")
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "Electrum-XVG")
     elif "LOCALAPPDATA" in os.environ:
         return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-XVG")
     elif 'ANDROID_DATA' in os.environ:
-        return "/sdcard/electrum-verge/"
+        return "/sdcard/electrum-doged/"
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -189,12 +189,12 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
         return "over %d years ago" % (round(distance_in_minutes / 525600))
 
 block_explorer_info = {
-    'blockexperts.com/verge/': ('http://blockexperts.com/verge/',
+    'blockexperts.com/doged/': ('http://blockexperts.com/doged/',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
 def block_explorer(config):
-    return config.get('block_explorer', 'blockexperts.com/verge/')
+    return config.get('block_explorer', 'blockexperts.com/doged/')
 
 def block_explorer_tuple(config):
     return block_explorer_info.get(block_explorer(config))
