@@ -24,18 +24,18 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, cairo
 from decimal import Decimal
-from electrum_doged.util import print_error, InvalidPassword
-from electrum_doged.bitcoin import is_valid
-from electrum_doged import WalletStorage, Wallet
+from electrum_verge.util import print_error, InvalidPassword
+from electrum_verge.bitcoin import is_valid
+from electrum_verge import WalletStorage, Wallet
 
 Gdk.threads_init()
 APP_NAME = "Electrum-XVG"
 import platform
 MONOSPACE_FONT = 'Lucida Console' if platform.system() == 'Windows' else 'monospace'
 
-from electrum_doged.util import format_satoshis, parse_URI
-from electrum_doged.network import DEFAULT_SERVERS
-from electrum_doged.bitcoin import MIN_RELAY_TX_FEE
+from electrum_verge.util import format_satoshis, parse_URI
+from electrum_verge.network import DEFAULT_SERVERS
+from electrum_verge.bitcoin import MIN_RELAY_TX_FEE
 
 def numbify(entry, is_int = False):
     text = entry.get_text().strip()
@@ -466,7 +466,7 @@ class ElectrumWindow:
         self.window.set_default_size(720, 350)
         self.wallet_updated = False
 
-        from electrum_doged.util import StoreDict
+        from electrum_verge.util import StoreDict
         self.contacts = StoreDict(self.config, 'contacts')
 
         vbox = Gtk.VBox()

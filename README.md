@@ -51,7 +51,7 @@ https://github.com/vergecurrency/electrum-xvg/archive/master.zip
 
 -download python qt4: http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.3/PyQt4-4.11.3-gpl-Py2.7-Qt4.8.6-x64.exe
 
--then in ms visual studio command prompt, go into the directory electrum-doged:
+-then in ms visual studio command prompt, go into the directory electrum-verge:
 
 pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
@@ -82,7 +82,7 @@ On Mac OS X:
   
   ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includes sip
 
-  sudo hdiutil create -fs HFS+ -volname "Electrum-XVG" -srcfolder dist/Electrum-XVG.app dist/electrum-doged-VERSION-macosx.dmg
+  sudo hdiutil create -fs HFS+ -volname "Electrum-XVG" -srcfolder dist/Electrum-XVG.app dist/electrum-verge-VERSION-macosx.dmg
   
   alternate official build method:
   
@@ -107,4 +107,4 @@ pyinstaller macosx.spec
 sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder "dist/Reddcoin Electrum.app" dist/reddcoin-electrum-$VERSION-mac.dmg
 
 
-[![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=doged|?&theme=cli#VERGE)
+[![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=verge|?&theme=cli#VERGE)

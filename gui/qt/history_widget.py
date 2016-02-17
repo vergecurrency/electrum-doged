@@ -20,9 +20,9 @@
 import webbrowser
 
 from util import *
-from electrum_doged.i18n import _
-from electrum_doged.util import block_explorer_URL, format_satoshis, format_time
-from electrum_doged.plugins import run_hook
+from electrum_verge.i18n import _
+from electrum_verge.util import block_explorer_URL, format_satoshis, format_time
+from electrum_verge.plugins import run_hook
 
 
 class HistoryWidget(MyTreeWidget):

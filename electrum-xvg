@@ -67,15 +67,15 @@ except Exception:
 # load local module as electrum
 if is_bundle or is_local or is_android:
     import imp
-    imp.load_module('electrum_doged', *imp.find_module('lib'))
-    imp.load_module('electrum_doged_gui', *imp.find_module('gui'))
+    imp.load_module('electrum_verge', *imp.find_module('lib'))
+    imp.load_module('electrum_verge_gui', *imp.find_module('gui'))
 
 
-from electrum_doged import util
-from electrum_doged import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy, Commands, known_commands, pick_random_server
-from electrum_doged.util import print_msg, print_error, print_stderr, print_json, set_verbosity, InvalidPassword
-from electrum_doged.daemon import get_daemon
-from electrum_doged.plugins import init_plugins
+from electrum_verge import util
+from electrum_verge import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy, Commands, known_commands, pick_random_server
+from electrum_verge.util import print_msg, print_error, print_stderr, print_json, set_verbosity, InvalidPassword
+from electrum_verge.daemon import get_daemon
+from electrum_verge.plugins import init_plugins
 
 
 # get password routine
@@ -124,8 +124,8 @@ def arg_parser():
 
 def print_help(parser):
     parser.print_help()
-    print_msg("Type 'electrum-doged help <command>' to see the help for a specific command")
-    print_msg("Type 'electrum-doged --help' to see the list of options")
+    print_msg("Type 'electrum-verge help <command>' to see the help for a specific command")
+    print_msg("Type 'electrum-verge --help' to see the list of options")
     run_command(known_commands['help'])
 
 
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     parser = arg_parser()
     options, args = parser.parse_args()
     if options.portable and options.wallet_path is None:
-        options.electrum_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-doged_data')
+        options.electrum_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-verge_data')
 
     # config is an object passed to the various constructors (wallet, interface, gui)
     if is_android:
@@ -231,7 +231,7 @@ if __name__ == '__main__':
         if gui_name in ['lite', 'classic']:
             gui_name = 'qt'
         try:
-            gui = __import__('electrum_doged_gui.' + gui_name, fromlist=['electrum_doged_gui'])
+            gui = __import__('electrum_verge_gui.' + gui_name, fromlist=['electrum_verge_gui'])
         except ImportError:
             traceback.print_exc(file=sys.stdout)
             sys.exit()
@@ -258,7 +258,7 @@ if __name__ == '__main__':
     if cmd == 'daemon':
         arg = args[1] if len(args)>1 else None
         if arg not in ['start', 'stop', 'status']:
-            print_msg("syntax: electrum-doged daemon <start|status|stop>")
+            print_msg("syntax: electrum-verge daemon <start|status|stop>")
             sys.exit(1)
         s = get_daemon(config, False)
         if arg == 'start':
@@ -369,7 +369,7 @@ if __name__ == '__main__':
 
     if cmd.name not in ['create', 'restore'] and cmd.requires_wallet and not storage.file_exists:
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum-doged create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'electrum-verge create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
 

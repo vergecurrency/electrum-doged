@@ -8,7 +8,7 @@
 
   ;Name and file
   Name "Electrum-XVG"
-  OutFile "dist/electrum-doged-setup.exe"
+  OutFile "dist/electrum-verge-setup.exe"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\Electrum-XVG"
@@ -59,7 +59,7 @@ Section
   SetOutPath "$INSTDIR"
 
   ;ADD YOUR OWN FILES HERE...
-  file /r dist\electrum-doged\*.*
+  file /r dist\electrum-verge\*.*
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Electrum-XVG" "" $INSTDIR
@@ -68,12 +68,12 @@ Section
   WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 
-  CreateShortCut "$DESKTOP\Electrum-XVG.lnk" "$INSTDIR\electrum-doged.exe" ""
+  CreateShortCut "$DESKTOP\Electrum-XVG.lnk" "$INSTDIR\electrum-verge.exe" ""
 
   ;create start-menu items
   CreateDirectory "$SMPROGRAMS\Electrum-XVG"
   CreateShortCut "$SMPROGRAMS\Electrum-XVG\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0
-  CreateShortCut "$SMPROGRAMS\Electrum-XVG\Electrum-XVG.lnk" "$INSTDIR\electrum-doged.exe" "" "$INSTDIR\electrum-doged.exe" 0
+  CreateShortCut "$SMPROGRAMS\Electrum-XVG\Electrum-XVG.lnk" "$INSTDIR\electrum-verge.exe" "" "$INSTDIR\electrum-verge.exe" 0
 
 SectionEnd
 

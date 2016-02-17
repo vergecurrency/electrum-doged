@@ -4,11 +4,11 @@ import tlslite
 import time
 import hashlib
 
-from electrum_doged.transaction import Transaction
-from electrum_doged import bitcoin
-from electrum_doged import x509
-from electrum_doged import paymentrequest
-from electrum_doged import paymentrequest_pb2 as pb2
+from electrum_verge.transaction import Transaction
+from electrum_verge import bitcoin
+from electrum_verge import x509
+from electrum_verge import paymentrequest
+from electrum_verge import paymentrequest_pb2 as pb2
 
 chain_file = 'mychain.pem'
 cert_file = 'mycert.pem'

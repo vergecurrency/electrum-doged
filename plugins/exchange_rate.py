@@ -11,10 +11,10 @@ import re
 from ssl import SSLError
 from decimal import Decimal
 
-from electrum_doged.plugins import BasePlugin, hook
-from electrum_doged.i18n import _
-from electrum_doged_gui.qt.util import *
-from electrum_doged_gui.qt.amountedit import AmountEdit
+from electrum_verge.plugins import BasePlugin, hook
+from electrum_verge.i18n import _
+from electrum_verge_gui.qt.util import *
+from electrum_verge_gui.qt.amountedit import AmountEdit
 
 
 EXCHANGES = ["Bit2C",
@@ -106,14 +106,14 @@ class Exchanger(threading.Thread):
         return dict([(r, Decimal(jsonresp["XVG"][r])) for r in jsonresp["XVG"]])
 
     def update_bf(self):
-        jsonresp = self.get_json('api.bitfinex.com', "/v1/pubticker/dogedusd")
+        jsonresp = self.get_json('api.bitfinex.com', "/v1/pubticker/vergeusd")
         return {"USD": Decimal(jsonresp["last_price"])}
 
     def update_be(self):
         quote_currencies = {"CNH": 0.0, "EUR": 0.0, "GBP": 0.0, "RUR": 0.0, "USD": 0.0}
-        jsonresp = self.get_json('btc-e.com', "/api/3/ticker/" + ('-'.join(['doged_'+c.lower() for c in quote_currencies])))
+        jsonresp = self.get_json('btc-e.com', "/api/3/ticker/" + ('-'.join(['verge_'+c.lower() for c in quote_currencies])))
         for cur in quote_currencies:
-            quote_currencies[cur] = Decimal(str(jsonresp['doged_'+cur.lower()]["last"]))
+            quote_currencies[cur] = Decimal(str(jsonresp['verge_'+cur.lower()]["last"]))
         return quote_currencies
 
     def update_cv(self):
@@ -122,7 +122,7 @@ class Exchanger(threading.Thread):
         return {"CAD": Decimal(str(cadprice))}
 
     def update_CNY(self):
-        jsonresp = self.get_json('data.btcchina.com', "/data/ticker?market=dogedcny")
+        jsonresp = self.get_json('data.btcchina.com', "/data/ticker?market=vergecny")
         cnyprice = jsonresp["ticker"]["last"]
         return {"CNY": Decimal(str(cnyprice))}
 
@@ -149,7 +149,7 @@ class Exchanger(threading.Thread):
         return quote_currencies
 
     def update_ok(self):
-        jsonresp = self.get_json('www.okcoin.cn', "/api/ticker.do?symbol=doged_cny")
+        jsonresp = self.get_json('www.okcoin.cn', "/api/ticker.do?symbol=verge_cny")
         cnyprice = jsonresp["ticker"]["last"]
         return {"CNY": Decimal(str(cnyprice))}
 

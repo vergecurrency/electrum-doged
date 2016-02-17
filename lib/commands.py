@@ -266,7 +266,7 @@ class Commands:
         return self.network.get_servers()
 
     def getversion(self):
-        import electrum_doged as electrum   # Needs to stay here to prevent ciruclar imports
+        import electrum_verge as electrum   # Needs to stay here to prevent ciruclar imports
         return electrum.ELECTRUM_VERSION
 
     def getmpk(self):

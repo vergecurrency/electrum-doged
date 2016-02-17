@@ -17,9 +17,9 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys, time, re, threading
-from electrum_doged.i18n import _, set_language
-from electrum_doged.util import block_explorer, block_explorer_info, block_explorer_URL
-from electrum_doged.util import print_error, print_msg
+from electrum_verge.i18n import _, set_language
+from electrum_verge.util import block_explorer, block_explorer_info, block_explorer_URL
+from electrum_verge.util import print_error, print_msg
 import os.path, json, ast, traceback
 import shutil
 import StringIO
@@ -30,17 +30,17 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
 
-from electrum_doged.bitcoin import MIN_RELAY_TX_FEE, is_valid
-from electrum_doged.plugins import run_hook
+from electrum_verge.bitcoin import MIN_RELAY_TX_FEE, is_valid
+from electrum_verge.plugins import run_hook
 
 import icons_rc
 
-from electrum_doged.util import format_satoshis, format_time, NotEnoughFunds, StoreDict
-from electrum_doged import Transaction
-from electrum_doged import mnemonic
-from electrum_doged import util, bitcoin, commands, Wallet
-from electrum_doged import SimpleConfig, Wallet, WalletStorage
-from electrum_doged import Imported_Wallet
+from electrum_verge.util import format_satoshis, format_time, NotEnoughFunds, StoreDict
+from electrum_verge import Transaction
+from electrum_verge import mnemonic
+from electrum_verge import util, bitcoin, commands, Wallet
+from electrum_verge import SimpleConfig, Wallet, WalletStorage
+from electrum_verge import Imported_Wallet
 
 from amountedit import AmountEdit, BTCAmountEdit, MyLineEdit
 from network_dialog import NetworkDialog
@@ -58,7 +58,7 @@ import csv
 
 
 
-from electrum_doged import ELECTRUM_VERSION
+from electrum_verge import ELECTRUM_VERSION
 import re
 
 from util import *
@@ -79,8 +79,8 @@ class StatusBarButton(QPushButton):
             apply(self.func,())
 
 
-from electrum_doged.paymentrequest import PR_UNPAID, PR_PAID, PR_EXPIRED
-from electrum_doged.paymentrequest import PaymentRequest, InvoiceStore, get_payment_request, make_payment_request
+from electrum_verge.paymentrequest import PR_UNPAID, PR_PAID, PR_EXPIRED
+from electrum_verge.paymentrequest import PaymentRequest, InvoiceStore, get_payment_request, make_payment_request
 
 pr_icons = {
     PR_UNPAID:":icons/unpaid.png",
@@ -147,7 +147,7 @@ class ElectrumWindow(QMainWindow):
         if self.config.get("is_maximized"):
             self.showMaximized()
 
-        self.setWindowIcon(QIcon(":icons/electrum-doged.png"))
+        self.setWindowIcon(QIcon(":icons/electrum-verge.png"))
         self.init_menubar()
 
         QShortcut(QKeySequence("Ctrl+W"), self, self.close)
@@ -202,7 +202,7 @@ class ElectrumWindow(QMainWindow):
         run_hook('close_wallet')
 
     def load_wallet(self, wallet):
-        import electrum_doged as electrum
+        import electrum_verge as electrum
         self.wallet = wallet
         # backward compatibility
         self.update_wallet_format()
@@ -2115,7 +2115,7 @@ class ElectrumWindow(QMainWindow):
 
 
     def read_tx_from_qrcode(self):
-        from electrum_doged import qrscanner
+        from electrum_verge import qrscanner
         try:
             data = qrscanner.scan_qr(self.config)
         except BaseException, e:
@@ -2173,7 +2173,7 @@ class ElectrumWindow(QMainWindow):
             self.show_transaction(tx)
 
     def do_process_from_txid(self):
-        from electrum_doged import transaction
+        from electrum_verge import transaction
         txid, ok = QInputDialog.getText(self, _('Lookup transaction'), _('Transaction ID') + ':')
         if ok and txid:
             r = self.network.synchronous_get([ ('blockchain.transaction.get',[str(txid)]) ])[0]
@@ -2241,7 +2241,7 @@ class ElectrumWindow(QMainWindow):
         e.setReadOnly(True)
         vbox.addWidget(e)
 
-        defaultname = 'electrum-doged-private-keys.csv'
+        defaultname = 'electrum-verge-private-keys.csv'
         select_msg = _('Select file to export your private keys to')
         hbox, filename_e, csv_button = filename_field(self, self.config, defaultname, select_msg)
         vbox.addLayout(hbox)
@@ -2321,7 +2321,7 @@ class ElectrumWindow(QMainWindow):
     def do_export_labels(self):
         labels = self.wallet.labels
         try:
-            fileName = self.getSaveFileName(_("Select file to save your labels"), 'electrum-doged_labels.dat', "*.dat")
+            fileName = self.getSaveFileName(_("Select file to save your labels"), 'electrum-verge_labels.dat', "*.dat")
             if fileName:
                 with open(fileName, 'w+') as f:
                     json.dump(labels, f)
@@ -2335,7 +2335,7 @@ class ElectrumWindow(QMainWindow):
         d.setWindowTitle(_('Export History'))
         d.setMinimumSize(400, 200)
         vbox = QVBoxLayout(d)
-        defaultname = os.path.expanduser('~/electrum-doged-history.csv')
+        defaultname = os.path.expanduser('~/electrum-verge-history.csv')
         select_msg = _('Select file to export your wallet transactions to')
         hbox, filename_e, csv_button = filename_field(self, self.config, defaultname, select_msg)
         vbox.addLayout(hbox)
@@ -2484,7 +2484,7 @@ class ElectrumWindow(QMainWindow):
         lang_label = QLabel(_('Language') + ':')
         lang_help = HelpButton(_('Select which language is used in the GUI (after restart).'))
         lang_combo = QComboBox()
-        from electrum_doged.i18n import languages
+        from electrum_verge.i18n import languages
         lang_combo.addItems(languages.values())
         try:
             index = languages.keys().index(self.config.get("language",''))
@@ -2574,7 +2574,7 @@ class ElectrumWindow(QMainWindow):
         block_ex_combo.currentIndexChanged.connect(on_be)
         widgets.append((block_ex_label, block_ex_combo, block_ex_help))
 
-        from electrum_doged import qrscanner
+        from electrum_verge import qrscanner
         system_cameras = qrscanner._find_system_cameras()
         qr_combo = QComboBox()
         qr_combo.addItem("Default","default")
@@ -2657,7 +2657,7 @@ class ElectrumWindow(QMainWindow):
 
 
     def plugins_dialog(self):
-        from electrum_doged.plugins import plugins, descriptions, is_available, loader
+        from electrum_verge.plugins import plugins, descriptions, is_available, loader
 
         self.pluginsdialog = d = QDialog(self)
         d.setWindowTitle(_('Electrum Plugins'))
@@ -2752,7 +2752,7 @@ class ElectrumWindow(QMainWindow):
 
     @protected
     def create_csr(self, alias, challenge, password):
-        from electrum_doged import x509
+        from electrum_verge import x509
         import tlslite
         xprv = self.wallet.get_master_private_key(self.wallet.root_name, password)
         _, _, _, c, k = bitcoin.deserialize_xkey(xprv)

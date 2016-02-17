@@ -1,10 +1,10 @@
 from decimal import Decimal
 _ = lambda x:x
 #from i18n import _
-from electrum_doged.wallet import WalletStorage, Wallet
-from electrum_doged.util import format_satoshis, set_verbosity, StoreDict
-from electrum_doged.bitcoin import is_valid
-from electrum_doged.network import filter_protocol
+from electrum_verge.wallet import WalletStorage, Wallet
+from electrum_verge.util import format_satoshis, set_verbosity, StoreDict
+from electrum_verge.bitcoin import is_valid
+from electrum_verge.network import filter_protocol
 import sys, getpass, datetime
 
 # minimal fdisk like gui for console usage
@@ -17,7 +17,7 @@ class ElectrumGui:
         self.config = config
         storage = WalletStorage(config.get_wallet_path())
         if not storage.file_exists:
-            print "Wallet not found. try 'electrum-doged create'"
+            print "Wallet not found. try 'electrum-verge create'"
             exit()
 
         self.done = 0
@@ -222,12 +222,12 @@ class ElectrumGui:
             print(_('Error'))
 
     def network_dialog(self):
-        print("use 'electrum-doged setconfig server/proxy' to change your network settings")
+        print("use 'electrum-verge setconfig server/proxy' to change your network settings")
         return True
 
 
     def settings_dialog(self):
-        print("use 'electrum-doged setconfig' to change your settings")
+        print("use 'electrum-verge setconfig' to change your settings")
         return True
 
     def password_dialog(self):

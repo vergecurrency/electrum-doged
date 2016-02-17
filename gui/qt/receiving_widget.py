@@ -1,6 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from electrum_doged.i18n import _
+from electrum_verge.i18n import _
 
 class ReceivingWidget(QTreeWidget):
 
