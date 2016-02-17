@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-a = Analysis(['electrum-doged'])
+a = Analysis(['electrum-xvg'])
 
 ##### include folder in distribution #######
 def extra_data(folder):
@@ -36,7 +36,7 @@ exe = EXE(pyz,
           a.binaries,
           a.zipfiles,
           a.datas,
-          name='electrum-doged.exe',
+          name='electrum-xvg.exe',
           debug=False,
           strip=None,
           upx=True,
@@ -47,4 +47,4 @@ coll = COLLECT(exe,
                a.datas,
                strip=None,
                upx=True,
-               name='electrum-doged')
+               name='electrum-xvg')

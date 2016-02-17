@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-a = Analysis(['electrum-doged'])
+a = Analysis(['electrum-xvg'])
 
 ##### include folder in distribution #######
 def extra_data(folder):

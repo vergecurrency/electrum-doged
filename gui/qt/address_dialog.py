@@ -17,8 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys, time, datetime, re, threading
-from electrum_doged.i18n import _, set_language
-from electrum_doged.util import print_error, print_msg
+from electrum_xvg.i18n import _, set_language
+from electrum_xvg.util import print_error, print_msg
 import os.path, json, ast, traceback
 import shutil
 import StringIO

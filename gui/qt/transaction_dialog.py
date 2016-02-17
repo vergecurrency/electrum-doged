@@ -17,8 +17,8 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 import sys, time, datetime, re, threading
-from electrum_doged.i18n import _, set_language
-from electrum_doged.util import print_error, print_msg
+from electrum_xvg.i18n import _, set_language
+from electrum_xvg.util import print_error, print_msg
 import os.path, json, ast, traceback
 import shutil
 import StringIO
@@ -33,9 +33,9 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
 
-from electrum_doged import transaction
-from electrum_doged.bitcoin import base_encode
-from electrum_doged.plugins import run_hook
+from electrum_xvg import transaction
+from electrum_xvg.bitcoin import base_encode
+from electrum_xvg.plugins import run_hook
 
 from util import *
 

@@ -1,8 +1,8 @@
 include README LICENCE RELEASE-NOTES AUTHORS
-include electrum-doged.conf.sample
-include electrum-doged.desktop
+include electrum-xvg.conf.sample
+include electrum-xvg.desktop
 include *.py
-include electrum-doged
+include electrum-xvg
 recursive-include lib *.py
 recursive-include gui *.py
 recursive-include plugins *.py

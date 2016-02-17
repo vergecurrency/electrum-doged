@@ -2,11 +2,11 @@ import curses, datetime, locale
 from decimal import Decimal
 _ = lambda x:x
 #from i18n import _
-from electrum_doged.util import format_satoshis, set_verbosity
-from electrum_doged.util import StoreDict
-from electrum_doged.bitcoin import is_valid
+from electrum_xvg.util import format_satoshis, set_verbosity
+from electrum_xvg.util import StoreDict
+from electrum_xvg.bitcoin import is_valid
 
-from electrum_doged import Wallet, WalletStorage
+from electrum_xvg import Wallet, WalletStorage
 
 import tty, sys
 
@@ -19,7 +19,7 @@ class ElectrumGui:
         self.network = network
         storage = WalletStorage(config.get_wallet_path())
         if not storage.file_exists:
-            print "Wallet not found. try 'electrum-doged create'"
+            print "Wallet not found. try 'electrum-xvg create'"
             exit()
 
         self.wallet = Wallet(storage)

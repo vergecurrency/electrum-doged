@@ -13,23 +13,23 @@ except ImportError:
     sys.exit(0)
 
 from decimal import Decimal as D
-from electrum_doged.bitcoin import is_valid
-from electrum_doged.i18n import _
+from electrum_xvg.bitcoin import is_valid
+from electrum_xvg.i18n import _
 import decimal
 import json
 import os.path
 import random
 import re
 import time
-from electrum_doged.wallet import Wallet, WalletStorage
+from electrum_xvg.wallet import Wallet, WalletStorage
 import webbrowser
 import history_widget_lite
 import receiving_widget
-from electrum_doged import util
+from electrum_xvg import util
 import datetime
 
-from electrum_doged.version import ELECTRUM_VERSION as electrum_version
-from electrum_doged.util import format_satoshis, age
+from electrum_xvg.version import ELECTRUM_VERSION as electrum_version
+from electrum_xvg.util import format_satoshis, age
 
 from main_window import ElectrumWindow
 import shutil
@@ -251,7 +251,7 @@ class MiniWindow(QDialog):
         show_hist = self.config.get("gui_show_receiving",False)
         self.toggle_receiving_layout(show_hist)
 
-        self.setWindowIcon(QIcon(":icons/electrum-doged.png"))
+        self.setWindowIcon(QIcon(":icons/electrum-xvg.png"))
         self.setWindowTitle("Electrum-XVG")
         self.setWindowFlags(Qt.Window|Qt.MSWindowsFixedSizeDialogHint)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
@@ -386,7 +386,7 @@ class MiniWindow(QDialog):
     def create_quote_text(self, btc_balance):
         """Return a string copy of the amount fiat currency the
         user has in bitcoins."""
-        from electrum_doged.plugins import run_hook
+        from electrum_xvg.plugins import run_hook
         r = {}
         run_hook('get_fiat_balance_text', btc_balance, r)
         return r.get(0,'')

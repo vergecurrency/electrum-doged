@@ -17,7 +17,7 @@ if __name__ == '__main__':
     target = 'dist/el4a-%s'%version
     os.system('rm -rf %s'%target)
     os.mkdir(target)
-    shutil.copyfile('electrum-doged', target + '/el4a.py')
+    shutil.copyfile('electrum-xvg', target + '/el4a.py')
     shutil.copyfile('scripts/authenticator.py', target + '/authenticator.py')
     shutil.copytree("packages",'dist/el4a-%s/packages'%version, ignore=shutil.ignore_patterns('*.pyc'))
     shutil.copytree("lib",'dist/el4a-%s/lib'%version, ignore=shutil.ignore_patterns('*.pyc'))

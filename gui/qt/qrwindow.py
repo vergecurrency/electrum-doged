@@ -26,8 +26,8 @@ from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
 import PyQt4.QtGui as QtGui
 
-from electrum_doged_gui.qt.qrcodewidget import QRCodeWidget
-from electrum_doged.i18n import _
+from electrum_xvg_gui.qt.qrcodewidget import QRCodeWidget
+from electrum_xvg.i18n import _
 
 if platform.system() == 'Windows':
     MONOSPACE_FONT = 'Lucida Console'

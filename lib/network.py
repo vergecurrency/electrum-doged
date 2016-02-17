@@ -17,7 +17,7 @@ from blockchain import Blockchain
 DEFAULT_PORTS = {'t':'50001', 's':'50002', 'h':'8081', 'g':'8082'}
 
 DEFAULT_SERVERS = {
-    'electrum-doged.space': DEFAULT_PORTS,
+    'electrum-xvg.space': DEFAULT_PORTS,
 }
 
 NODES_RETRY_INTERVAL = 60

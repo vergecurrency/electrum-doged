@@ -22,9 +22,9 @@
 from __future__ import absolute_import
 import android
 
-from electrum_doged import SimpleConfig, Wallet, WalletStorage, format_satoshis
-from electrum_doged.bitcoin import is_address
-from electrum_doged import util
+from electrum_xvg import SimpleConfig, Wallet, WalletStorage, format_satoshis
+from electrum_xvg.bitcoin import is_address
+from electrum_xvg import util
 from decimal import Decimal
 import datetime, re
 
@@ -879,7 +879,7 @@ def make_bitmap(data):
     droid.dialogShow()
     try:
         import qrcode
-        from electrum_doged import bmp
+        from electrum_xvg import bmp
         qr = qrcode.QRCode()
         qr.add_data(data)
         bmp.save_qrcode(qr,"/sdcard/sl4a/qrcode.bmp")

@@ -22,8 +22,8 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
 
-from electrum_doged.i18n import _
-from electrum_doged import ELECTRUM_VERSION, print_error
+from electrum_xvg.i18n import _
+from electrum_xvg import ELECTRUM_VERSION, print_error
 
 class VersionGetter(threading.Thread):
 
@@ -34,7 +34,7 @@ class VersionGetter(threading.Thread):
 
     def run(self):
         try:
-            con = httplib.HTTPSConnection('electrum-doged.org', timeout=5)
+            con = httplib.HTTPSConnection('electrum-xvg.org', timeout=5)
             con.request("GET", "/version")
             res = con.getresponse()
         except socket.error as msg:
@@ -94,7 +94,7 @@ class UpdateLabel(QLabel):
         self.dialog.done(0)
 
     def open_website(self):
-        webbrowser.open("http://electrum-doged.space/")
+        webbrowser.open("http://electrum-xvg.space/")
         self.dialog.done(0)
 
     def mouseReleaseEvent(self, event):

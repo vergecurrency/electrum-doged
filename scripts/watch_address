@@ -2,7 +2,7 @@
 
 import sys
 import time
-import electrum_doged as electrum
+import electrum_xvg as electrum
 
 try:
     addr = sys.argv[1]
