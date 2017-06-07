@@ -189,12 +189,12 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
         return "over %d years ago" % (round(distance_in_minutes / 525600))
 
 block_explorer_info = {
-    'blockexperts.com/xvg/': ('http://blockexperts.com/xvg/',
+    'prohashing.com/explorer/Verge/': ('https://prohashing.com/explorer/Verge/',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
 def block_explorer(config):
-    return config.get('block_explorer', 'blockexperts.com/xvg/')
+    return config.get('block_explorer', 'prohashing.com/explorer/Verge/')
 
 def block_explorer_tuple(config):
     return block_explorer_info.get(block_explorer(config))
