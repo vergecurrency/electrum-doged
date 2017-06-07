@@ -10,6 +10,13 @@ Language: Python
 
 Homepage: http://electrum-verge.xyz/
 
+To get started, download the release, unzip, and click electrum-xvg.exe
+
+don't forget to copy your randomly generated seedphrase, this will act as your private key.
+
+they are not stored on our servers, so please don't lose them!
+
+
 
 1.a) GETTING STARTED WITH UBUNTU/LINUX
 ------------------
