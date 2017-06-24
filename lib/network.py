@@ -433,7 +433,7 @@ class Network(util.DaemonThread):
         elif method == 'server.banner':
             self.banner = result
             self.notify('banner')
-		elif method == 'server.donation_address':
+	elif method == 'server.donation_address':
             if error is None:
                 self.donation_address = result
         elif method == 'blockchain.address.subscribe':
