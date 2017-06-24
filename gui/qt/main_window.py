@@ -407,16 +407,16 @@ class ElectrumWindow(QMainWindow):
         help_menu.addSeparator()
         help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("https://github.com/vergecurrency/electrum-xvg")).setShortcut(QKeySequence.HelpContents)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
-		help_menu.addSeparator()
-		help_menu.addAction(_("&Donate to server"), self.donate_to_server)
+	help_menu.addSeparator()
+	help_menu.addAction(_("&Donate to server"), self.donate_to_server)
 
         self.setMenuBar(menubar)
 		
-	def donate_to_server(self):
+    def donate_to_server(self):
         if self.network.is_connected():
-            d = self.network.get_donation_address()
-            host = self.network.get_parameters()[0]
-            self.pay_to_URI('bitcoin:%s?message=donation for %s'%(d, host))
+        d = self.network.get_donation_address()
+        host = self.network.get_parameters()[0]
+        self.pay_to_URI('bitcoin:%s?message=donation for %s'%(d, host))
 
     def show_about(self):
         QMessageBox.about(self, "Electrum-XVG",
