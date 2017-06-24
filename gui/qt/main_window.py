@@ -403,16 +403,24 @@ class ElectrumWindow(QMainWindow):
 
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
-        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("http://electrum-verge.xyz"))
+        help_menu.addAction(_("&Official Website"), lambda: webbrowser.open("http://electrum-verge.xyz"))
         help_menu.addSeparator()
-        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://electrum-verge.xyz")).setShortcut(QKeySequence.HelpContents)
+        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("https://github.com/vergecurrency/electrum-xvg")).setShortcut(QKeySequence.HelpContents)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
+		help_menu.addSeparator()
+		help_menu.addAction(_("&Donate to server"), self.donate_to_server)
 
         self.setMenuBar(menubar)
+		
+	def donate_to_server(self):
+        if self.network.is_connected():
+            d = self.network.get_donation_address()
+            host = self.network.get_parameters()[0]
+            self.pay_to_URI('bitcoin:%s?message=donation for %s'%(d, host))
 
     def show_about(self):
         QMessageBox.about(self, "Electrum-XVG",
-            _("Version")+" %s" % (self.wallet.electrum_version) + "\n\n" + _("Electrum's focus is speed, with low resource usage and simplifying Verge. You do not need to perform regular backups, because your wallet can be recovered from a secret phrase that you can memorize or write on paper. Startup times are instant because it operates in conjunction with high-performance servers that handle the most complicated parts of the Verge system."))
+            _("Version")+" %s" % (self.wallet.electrum_version) + "\n\n" + _("Electrum's focus is speed, with low resource usage and simplifying Verge transactions. You do not need to perform regular backups, because your wallet can be recovered from a secret phrase that you can memorize or write on paper. Startup times are instant because it operates in conjunction with high-performance servers that handle the most complicated parts of the Verge blockchain."))
 
     def show_report_bug(self):
         QMessageBox.information(self, "Electrum-XVG - " + _("Reporting Bugs"),

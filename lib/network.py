@@ -143,6 +143,7 @@ class Network(util.DaemonThread):
         self.pending_servers = set()
 
         self.banner = ''
+		self.donation_address = ''
         self.heights = {}
         self.merkle_roots = {}
         self.utxo_roots = {}
@@ -215,6 +216,7 @@ class Network(util.DaemonThread):
         for addr in self.subscribed_addresses:
             self.interface.send_request({'method':'blockchain.address.subscribe','params':[addr]})
         self.interface.send_request({'method':'server.banner','params':[]})
+		self.interface.send_request({'method':'server.donation_address','params':[]})
         self.interface.send_request({'method':'server.peers.subscribe','params':[]})
 
     def get_status_value(self, key):
@@ -253,6 +255,10 @@ class Network(util.DaemonThread):
         host, port, protocol = deserialize_server(self.default_server)
         auto_connect = self.config.get('auto_cycle', True)
         return host, port, protocol, self.proxy, auto_connect
+		
+	def get_donation_address(self):
+        if self.is_connected():
+            return self.donation_address
 
     def get_interfaces(self):
         return self.interfaces.keys()
@@ -427,6 +433,9 @@ class Network(util.DaemonThread):
         elif method == 'server.banner':
             self.banner = result
             self.notify('banner')
+		elif method == 'server.donation_address':
+            if error is None:
+                self.donation_address = result
         elif method == 'blockchain.address.subscribe':
             addr = response.get('params')[0]
             self.addr_responses[addr] = result
