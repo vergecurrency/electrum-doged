@@ -297,7 +297,7 @@ class Network(util.DaemonThread):
     def set_proxy(self, proxy):
         self.proxy = proxy
         if proxy:
-			self.print_error("setting proxy!", proxy)
+	    self.print_error("setting proxy!", proxy)
             proxy_mode = proxy_modes.index(proxy["mode"]) + 1
             socks.setdefaultproxy(proxy_mode, proxy["host"], int(proxy["port"]))
             socket.socket = socks.socksocket
