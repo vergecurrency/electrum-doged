@@ -216,7 +216,7 @@ class Network(util.DaemonThread):
         for addr in self.subscribed_addresses:
             self.interface.send_request({'method':'blockchain.address.subscribe','params':[addr]})
         self.interface.send_request({'method':'server.banner','params':[]})
-		self.interface.send_request({'method':'server.donation_address','params':[]})
+	self.interface.send_request({'method':'server.donation_address','params':[]})
         self.interface.send_request({'method':'server.peers.subscribe','params':[]})
 
     def get_status_value(self, key):
