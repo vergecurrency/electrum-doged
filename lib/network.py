@@ -143,7 +143,7 @@ class Network(util.DaemonThread):
         self.pending_servers = set()
 
         self.banner = ''
-		self.donation_address = ''
+	self.donation_address = ''
         self.heights = {}
         self.merkle_roots = {}
         self.utxo_roots = {}
