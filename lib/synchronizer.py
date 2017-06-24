@@ -176,7 +176,8 @@ class WalletSynchronizer(util.DaemonThread):
                 self.wallet.receive_tx_callback(tx_hash, tx, tx_height)
                 self.was_updated = True
                 requested_tx.remove( (tx_hash, tx_height) )
-                self.print_error("received tx:", tx_hash, len(tx.raw))
+                self.print_error("received tx %s height: %d bytes: %d" %
+								(tx_hash, tx_height, len(tx.raw)))
 
             else:
                 self.print_error("Error: Unknown message:" + method + ", " + repr(params) + ", " + repr(result) )
