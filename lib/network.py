@@ -256,7 +256,7 @@ class Network(util.DaemonThread):
         auto_connect = self.config.get('auto_cycle', True)
         return host, port, protocol, self.proxy, auto_connect
 		
-	def get_donation_address(self):
+    def get_donation_address(self):
         if self.is_connected():
             return self.donation_address
 
