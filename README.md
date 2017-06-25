@@ -1,7 +1,7 @@
 Electrum-XVG - lightweight Verge client
 ------------------------------------------------
 ![Electrum-XVG](https://raw.githubusercontent.com/vergecurrency/electrum-xvg/master/electrumlogo.png)
-
+electrum-xvg.svg?branch=master)](https://travis-ci.org/vergecurrency/electrum-xvg)
 Licence: GNU GPL v3
 
 Authors: sunerok, bitspill & whit3water
