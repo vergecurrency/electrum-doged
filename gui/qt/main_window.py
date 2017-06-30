@@ -414,11 +414,11 @@ class ElectrumWindow(QMainWindow):
 		
     def donate_to_server(self):
         d = self.network.get_donation_address()
-		if d:
+        if d:
             host = self.network.get_parameters()[0]
             self.pay_to_URI('verge:%s?message=donation for %s'%(d, host))
-		else:
-			self.show_error(_('No donation address for this server'))	
+        else:
+            self.show_error(_('No donation address for this server'))	
 
     def show_about(self):
         QMessageBox.about(self, "Electrum-XVG",
