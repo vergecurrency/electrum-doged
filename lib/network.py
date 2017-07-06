@@ -434,8 +434,7 @@ class Network(util.DaemonThread):
             self.banner = result
             self.notify('banner')
 	elif method == 'server.donation_address':
-            if error is None:
-                self.donation_address = result
+            self.donation_address = result
         elif method == 'blockchain.address.subscribe':
             addr = response.get('params')[0]
             self.addr_responses[addr] = result
