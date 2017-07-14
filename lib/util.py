@@ -189,7 +189,7 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
         return "over %d years ago" % (round(distance_in_minutes / 525600))
 
 block_explorer_info = {
-    'prohashing.com/explorer/Verge/': ('https://prohashing.com/explorer/Verge/',
+    'prohashing.com/explorer/Verge/': ('https://prohashing.com/explorer/Verge',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
@@ -203,10 +203,10 @@ def block_explorer_URL(config, kind, item):
     be_tuple = block_explorer_tuple(config)
     if not be_tuple:
         return
-    kind_str = be_tuple[1].get(kind)
-    if not kind_str:
-        return
-    url_parts = [be_tuple[0], kind_str, item]
+    #kind_str = be_tuple[1].get(kind)
+    #if not kind_str:
+    #    return
+    url_parts = [be_tuple[0], item]
     return "/".join(url_parts)
 
 # URL decode
