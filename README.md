@@ -105,7 +105,7 @@ export VERSION=2.0.0
 
 pyinstaller windows.spec
 
-zip -r dist/reddcoin-electrum-$VERSION-win.zip dist/reddcoin-electrum.exe
+zip -r dist/verge-electrum-$VERSION-win.zip dist/verge-electrum.exe
 
 On Mac OS X:
 
@@ -113,7 +113,7 @@ export VERSION=2.0.0
 
 pyinstaller macosx.spec
 
-sudo hdiutil create -fs HFS+ -volname "Reddcoin Electrum" -srcfolder "dist/Reddcoin Electrum.app" dist/reddcoin-electrum-$VERSION-mac.dmg
+sudo hdiutil create -fs HFS+ -volname "Verge Electrum" -srcfolder "dist/VERGE Electrum.app" dist/VERGE-electrum-$VERSION-mac.dmg
 
 
 [![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=xvg|?&theme=cli#VERGE)
