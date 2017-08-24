@@ -116,7 +116,7 @@ class InstallWizard(QDialog):
         ]
 
         for i, (wtype,name) in enumerate(self.wallet_types):
-            if not filter(lambda x:x[0]==wtype, electrum.wallet.wallet_types):
+            if not filter(lambda x:x[0]==wtype, electrum_xvg.wallet.wallet_types):
                 continue
             button = QRadioButton(gb2)
             button.setText(name)
