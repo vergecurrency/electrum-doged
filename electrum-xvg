@@ -27,10 +27,10 @@ import traceback
 
 if getattr(sys, 'frozen', False):
 	# Frozen
-    dir_ = os.path.dirname(sys.executable)
+    script_dir  = os.path.dirname(sys.executable)
 else:
 	# Not Frozen
-    dir_ = os.path.dirname(os.path.realpath(__file__))
+    script_dir  = os.path.dirname(os.path.realpath(__file__))
 
 is_bundle = getattr(sys, 'frozen', False)
 is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "setup-release.py"))
