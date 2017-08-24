@@ -7,6 +7,8 @@ import urlparse
 import urllib
 import threading
 
+sys.stdout = sys.stderr = open('log.txt', 'w')
+
 def normalize_version(v):
     return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
 
