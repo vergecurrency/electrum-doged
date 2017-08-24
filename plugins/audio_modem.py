@@ -1,7 +1,7 @@
-from electrum.plugins import BasePlugin, hook
-from electrum_gui.qt.util import WaitingDialog, EnterButton
-from electrum.util import print_msg, print_error
-from electrum.i18n import _
+from electrum_xvg.plugins import BasePlugin, hook
+from electrum_xvg_gui.qt.util import WaitingDialog, EnterButton
+from electrum_xvg.util import print_msg, print_error
+from electrum_xvg.i18n import _
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -78,7 +78,7 @@ class Plugin(BasePlugin):
             self.sender = self._send(parent=dialog, blob=blob)
             self.sender.start()
         b.clicked.connect(handler)
-        dialog.sharing_buttons.insert(-1, b)
+        dialog.buttons.insert(0, b)
 
     @hook
     def scan_text_edit(self, parent):

@@ -16,12 +16,12 @@ import PyQt4.QtGui as QtGui
 import aes
 import base64
 
-import electrum
-from electrum.plugins import BasePlugin, hook
-from electrum.i18n import _
+import electrum_xvg as electrum
+from electrum_xvg.plugins import BasePlugin, hook
+from electrum_xvg.i18n import _
 
-from electrum_gui.qt import HelpButton, EnterButton
-from electrum_gui.qt.util import ThreadedButton, Buttons, CancelButton, OkButton
+from electrum_xvg_gui.qt import HelpButton, EnterButton
+from electrum_xvg_gui.qt.util import ThreadedButton, Buttons, CancelButton, OkButton
 
 class Plugin(BasePlugin):
 
@@ -51,7 +51,7 @@ class Plugin(BasePlugin):
         self.window.connect(self.window, SIGNAL('labels:pulled'), self.on_pulled)
 
     @hook
-    def load_wallet(self, wallet, window):
+    def load_wallet(self, wallet):
         self.wallet = wallet
 
         self.wallet_nonce = self.wallet.storage.get("wallet_nonce")
