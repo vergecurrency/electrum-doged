@@ -11,29 +11,32 @@ import re
 from ssl import SSLError
 from decimal import Decimal
 
-from electrum_xvg.plugins import BasePlugin, hook
-from electrum_xvg.i18n import _
-from electrum_xvg_gui.qt.util import *
-from electrum_xvg_gui.qt.amountedit import AmountEdit
+from electrum.bitcoin import COIN
+from electrum.plugins import BasePlugin, hook
+from electrum.i18n import _
+from electrum_gui.qt.util import *
+from electrum_gui.qt.amountedit import AmountEdit
 
 
-EXCHANGES = ["Bit2C",
+EXCHANGES = ["BitcoinAverage",
              "BitcoinVenezuela",
-             "Bitfinex",
-             "BTC-e",
+             "BTCParalelo",
+             "Bitcurex",
+             "Bitmarket",
+             "BitPay",
+             "Blockchain",
              "BTCChina",
              "CaVirtEx",
-             "GoCoin",
-             "HitBTC",
-             "Kraken",
-             "OKCoin"]
+             "Coinbase",
+             "CoinDesk",
+             "itBit",
+             "LocalBitcoins",
+             "Winkdex"]
 
-EXCH_SUPPORT_HIST = [("BitcoinVenezuela", "ARS"),
-                     ("BitcoinVenezuela", "EUR"),
-                     ("BitcoinVenezuela", "USD"),
-                     ("BitcoinVenezuela", "VEF"),
-                     ("Kraken", "EUR"),
-                     ("Kraken", "USD")]
+EXCH_SUPPORT_HIST = [("CoinDesk", "USD"),
+                     ("Winkdex", "USD"),
+                     ("BitcoinVenezuela", "ARS"),
+                     ("BitcoinVenezuela", "VEF")]
 
 class Exchanger(threading.Thread):
 
@@ -44,16 +47,16 @@ class Exchanger(threading.Thread):
         self.quote_currencies = None
         self.lock = threading.Lock()
         self.query_rates = threading.Event()
-        self.use_exchange = self.parent.config.get('use_exchange', "BTC-e")
+        self.use_exchange = self.parent.config.get('use_exchange', "Blockchain")
         self.parent.exchanges = EXCHANGES
         #self.parent.win.emit(SIGNAL("refresh_exchanges_combo()"))
         #self.parent.win.emit(SIGNAL("refresh_currencies_combo()"))
         self.is_running = False
 
     def get_json(self, site, get_string):
-        resp = requests.request('GET', 'https://' + site + get_string, verify=False, headers={"User-Agent":"Electrum"})
+        resp = requests.request('GET', 'https://' + site + get_string, headers={"User-Agent":"Electrum"})
         return resp.json()
-        
+
     def exchange(self, btc_amount, quote_currency):
         with self.lock:
             if self.quote_currencies is None:
@@ -67,18 +70,22 @@ class Exchanger(threading.Thread):
         self.is_running = False
 
     def update_rate(self):
-        self.use_exchange = self.parent.config.get('use_exchange', "BTC-e")
+        self.use_exchange = self.parent.config.get('use_exchange', "Blockchain")
         update_rates = {
-            "Bit2C": self.update_b2c,
+            "BitcoinAverage": self.update_ba,
             "BitcoinVenezuela": self.update_bv,
-            "Bitfinex": self.update_bf,
-            "BTC-e": self.update_be,
+            "BTCParalelo": self.update_bpl,
+            "Bitcurex": self.update_bx,
+            "Bitmarket": self.update_bm,
+            "BitPay": self.update_bp,
+            "Blockchain": self.update_bc,
             "BTCChina": self.update_CNY,
             "CaVirtEx": self.update_cv,
-            "GoCoin": self.update_gc,
-            "HitBTC": self.update_hb,
-            "Kraken": self.update_kk,
-            "OKCoin": self.update_ok,
+            "CoinDesk": self.update_cd,
+            "Coinbase": self.update_cb,
+            "itBit": self.update_ib,
+            "LocalBitcoins": self.update_lb,
+            "Winkdex": self.update_wd,
         }
         try:
             rates = update_rates[self.use_exchange]()
@@ -97,61 +104,79 @@ class Exchanger(threading.Thread):
             self.query_rates.wait(150)
 
 
-    def update_b2c(self):
-        jsonresp = self.get_json('www.bit2c.co.il', "/Exchanges/XVGNIS/Ticker.json")
-        return {"NIS": Decimal(str(jsonresp["ll"]))}
+    def update_cd(self):
+        resp_currencies = self.get_json('api.coindesk.com', "/v1/bpi/supported-currencies.json")
+        quote_currencies = {}
+        for cur in resp_currencies:
+            quote_currencies[str(cur["currency"])] = 0.0
+        current_cur = self.parent.config.get("currency", "EUR")
+        if current_cur in quote_currencies:
+            resp_rate = self.get_json('api.coindesk.com', "/v1/bpi/currentprice/" + str(current_cur) + ".json")
+            quote_currencies[str(current_cur)] = Decimal(str(resp_rate["bpi"][str(current_cur)]["rate_float"]))
+        return quote_currencies
+
+    def update_ib(self):
+        available_currencies = ["USD", "EUR", "SGD"]
+        quote_currencies = {}
+        for cur in available_currencies:
+            quote_currencies[cur] = 0.0
+        current_cur = self.parent.config.get("currency", "EUR")
+        if current_cur in available_currencies:
+            resp_rate = self.get_json('api.itbit.com', "/v1/markets/XBT" + str(current_cur) + "/ticker")
+            quote_currencies[str(current_cur)] = Decimal(str(resp_rate["lastPrice"]))
+        return quote_currencies
+
+    def update_wd(self):
+        winkresp = self.get_json('winkdex.com', "/api/v0/price")
+        return {"USD": Decimal(str(winkresp["price"]))/Decimal("100.0")}
+
+    def update_cv(self):
+        jsonresp = self.get_json('www.cavirtex.com', "/api/CAD/ticker.json")
+        cadprice = jsonresp["last"]
+        return {"CAD": Decimal(str(cadprice))}
+
+    def update_bm(self):
+        jsonresp = self.get_json('www.bitmarket.pl', "/json/BTCPLN/ticker.json")
+        pln_price = jsonresp["last"]
+        return {"PLN": Decimal(str(pln_price))}
+
+    def update_bx(self):
+        jsonresp = self.get_json('pln.bitcurex.com', "/data/ticker.json")
+        pln_price = jsonresp["last"]
+        return {"PLN": Decimal(str(pln_price))}
+
+    def update_CNY(self):
+        jsonresp = self.get_json('data.btcchina.com', "/data/ticker")
+        cnyprice = jsonresp["ticker"]["last"]
+        return {"CNY": Decimal(str(cnyprice))}
+
+    def update_bp(self):
+        jsonresp = self.get_json('bitpay.com', "/api/rates")
+        return dict([(str(r["code"]), Decimal(r["rate"])) for r in jsonresp])
+
+    def update_cb(self):
+        jsonresp = self.get_json('coinbase.com', "/api/v1/currencies/exchange_rates")
+        return dict([(r[7:].upper(), Decimal(str(jsonresp[r]))) for r in jsonresp if r.startswith("btc_to_")])
+
+    def update_bc(self):
+        jsonresp = self.get_json('blockchain.info', "/ticker")
+        return dict([(r, Decimal(str(jsonresp[r]["15m"]))) for r in jsonresp])
+
+    def update_lb(self):
+        jsonresp = self.get_json('localbitcoins.com', "/bitcoinaverage/ticker-all-currencies/")
+        return dict([(r, Decimal(jsonresp[r]["rates"]["last"])) for r in jsonresp])
 
     def update_bv(self):
         jsonresp = self.get_json('api.bitcoinvenezuela.com', "/")
-        return dict([(r, Decimal(jsonresp["XVG"][r])) for r in jsonresp["XVG"]])
+        return dict([(r, Decimal(jsonresp["BTC"][r])) for r in jsonresp["BTC"]])
 
-    def update_bf(self):
-        jsonresp = self.get_json('api.bitfinex.com', "/v1/pubticker/xvgusd")
-        return {"USD": Decimal(jsonresp["last_price"])}
+    def update_bpl(self):
+        jsonresp = self.get_json('btcparalelo.com', "/api/price")
+        return {"VEF": Decimal(jsonresp["price"])}
 
-    def update_be(self):
-        quote_currencies = {"CNH": 0.0, "EUR": 0.0, "GBP": 0.0, "RUR": 0.0, "USD": 0.0}
-        jsonresp = self.get_json('btc-e.com', "/api/3/ticker/" + ('-'.join(['xvg_'+c.lower() for c in quote_currencies])))
-        for cur in quote_currencies:
-            quote_currencies[cur] = Decimal(str(jsonresp['xvg_'+cur.lower()]["last"]))
-        return quote_currencies
-
-    def update_cv(self):
-        jsonresp = self.get_json('www.cavirtex.com', "/api2/ticker.json?currencypair=XVGCAD")
-        cadprice = jsonresp["ticker"]["XVGCAD"]["last"]
-        return {"CAD": Decimal(str(cadprice))}
-
-    def update_CNY(self):
-        jsonresp = self.get_json('data.btcchina.com', "/data/ticker?market=xvgcny")
-        cnyprice = jsonresp["ticker"]["last"]
-        return {"CNY": Decimal(str(cnyprice))}
-
-    def update_gc(self):
-        jsonresp = self.get_json('x.g0cn.com', "/prices")
-        quote_currencies = {}
-        for r in jsonresp["prices"]["XVG"]:
-            quote_currencies[r] = Decimal(jsonresp["prices"]["XVG"][r])
-        return quote_currencies
-
-    def update_hb(self):
-        quote_currencies = {"EUR": 0.0, "USD": 0.0}
-        for cur in quote_currencies:
-            quote_currencies[cur] = Decimal(str(self.get_json('api.hitbtc.com', "/api/1/public/XVG" + cur + "/ticker")["last"]))
-        return quote_currencies
-
-    def update_kk(self):
-        resp_currencies = self.get_json('api.kraken.com', "/0/public/AssetPairs")["result"]
-        pairs = ','.join([k for k in resp_currencies if k.startswith("XXVGZ")])
-        resp_rate = self.get_json('api.kraken.com', "/0/public/Ticker?pair=" + pairs)["result"]
-        quote_currencies = {}
-        for cur in resp_rate:
-            quote_currencies[cur[5:]] = Decimal(str(resp_rate[cur]["c"][0]))
-        return quote_currencies
-
-    def update_ok(self):
-        jsonresp = self.get_json('www.okcoin.cn', "/api/ticker.do?symbol=xvg_cny")
-        cnyprice = jsonresp["ticker"]["last"]
-        return {"CNY": Decimal(str(cnyprice))}
+    def update_ba(self):
+        jsonresp = self.get_json('api.bitcoinaverage.com', "/ticker/global/all")
+        return dict([(r, Decimal(jsonresp[r]["last"])) for r in jsonresp if not r == "timestamp"])
 
 
 class Plugin(BasePlugin):
@@ -159,7 +184,7 @@ class Plugin(BasePlugin):
     def __init__(self,a,b):
         BasePlugin.__init__(self,a,b)
         self.currencies = [self.fiat_unit()]
-        self.exchanges = [self.config.get('use_exchange', "BTC-e")]
+        self.exchanges = [self.config.get('use_exchange', "Blockchain")]
         # Do price discovery
         self.exchanger = Exchanger(self)
         self.exchanger.start()
@@ -196,7 +221,7 @@ class Plugin(BasePlugin):
     @hook
     def get_fiat_balance_text(self, btc_balance, r):
         # return balance as: 1.23 USD
-        r[0] = self.create_fiat_balance_text(Decimal(btc_balance) / 100000000)
+        r[0] = self.create_fiat_balance_text(Decimal(btc_balance) / COIN)
 
     def get_fiat_price_text(self, r):
         # return BTC price as: 123.45 USD
@@ -213,17 +238,17 @@ class Plugin(BasePlugin):
         self.get_fiat_price_text(r)
         quote = r.get(0)
         if quote:
-            price_text = "1 XVG~%s"%quote
+            price_text = "1 BTC~%s"%quote
             fiat_currency = quote[-3:]
             btc_price = self.btc_rate
-            fiat_balance = Decimal(btc_price) * (Decimal(btc_balance)/100000000)
+            fiat_balance = Decimal(btc_price) * Decimal(btc_balance) / COIN
             balance_text = "(%.2f %s)" % (fiat_balance,fiat_currency)
             text = "  " + balance_text + "     " + price_text + " "
         r2[0] = text
 
     def create_fiat_balance_text(self, btc_balance):
         quote_currency = self.fiat_unit()
-        self.exchanger.use_exchange = self.config.get("use_exchange", "BTC-e")
+        self.exchanger.use_exchange = self.config.get("use_exchange", "Blockchain")
         cur_rate = self.exchanger.exchange(Decimal("1.0"), quote_currency)
         if cur_rate is None:
             quote_text = ""
@@ -234,14 +259,14 @@ class Plugin(BasePlugin):
         return quote_text
 
     @hook
-    def load_wallet(self, wallet):
+    def load_wallet(self, wallet, window):
         tx_list = {}
         for item in self.wallet.get_history(self.wallet.storage.get("current_account", None)):
             tx_hash, conf, value, timestamp, balance = item
             tx_list[tx_hash] = {'value': value, 'timestamp': timestamp }
 
         self.tx_list = tx_list
-        self.cur_exchange = self.config.get('use_exchange', "BTC-e")
+        self.cur_exchange = self.config.get('use_exchange', "Blockchain")
         t = threading.Thread(target=self.request_history_rates, args=())
         t.setDaemon(True)
         t.start()
@@ -275,19 +300,14 @@ class Plugin(BasePlugin):
                 return
         elif self.cur_exchange == "BitcoinVenezuela":
             cur_currency = self.fiat_unit()
-            if cur_currency in ("ARS", "EUR", "USD", "VEF"):
+            if cur_currency == "VEF":
                 try:
-                    self.resp_hist = self.exchanger.get_json('api.bitcoinvenezuela.com', "/historical/index.php?coin=XVG")[cur_currency + '_XVG']
+                    self.resp_hist = self.exchanger.get_json('api.bitcoinvenezuela.com', "/historical/index.php?coin=BTC")['VEF_BTC']
                 except Exception:
                     return
-            else:
-                return
-        elif self.cur_exchange == "Kraken":
-            cur_currency = self.fiat_unit()
-            if cur_currency in ("EUR", "USD"):
+            elif cur_currency == "ARS":
                 try:
-                    self.resp_hist = self.exchanger.get_json('api.kraken.com', "https://api.kraken.com/0/public/OHLC?pair=XVG"+cur_currency+"&interval=1440")['result']['XXVGZ'+cur_currency]
-                    self.resp_hist = dict([(t[0], t[4]) for t in self.resp_hist])
+                    self.resp_hist = self.exchanger.get_json('api.bitcoinvenezuela.com', "/historical/index.php?coin=BTC")['ARS_BTC']
                 except Exception:
                     return
             else:
@@ -319,20 +339,20 @@ class Plugin(BasePlugin):
                 tx_info = {'timestamp':int(time.time()), 'value': v}
                 pass
             tx_time = int(tx_info['timestamp'])
-            tx_value = Decimal(str(tx_info['value'])) / 100000000
+            tx_value = Decimal(str(tx_info['value'])) / COIN
             if self.cur_exchange == "CoinDesk":
                 tx_time_str = datetime.datetime.fromtimestamp(tx_time).strftime('%Y-%m-%d')
                 try:
                     tx_fiat_val = "%.2f %s" % (tx_value * Decimal(self.resp_hist['bpi'][tx_time_str]), "USD")
                 except KeyError:
-                    tx_fiat_val = "%.2f %s" % (self.btc_rate * Decimal(str(tx_info['value']))/100000000 , "USD")
+                    tx_fiat_val = "%.2f %s" % (self.btc_rate * Decimal(str(tx_info['value']))/COIN , "USD")
             elif self.cur_exchange == "Winkdex":
                 tx_time_str = datetime.datetime.fromtimestamp(tx_time).strftime('%Y-%m-%d') + "T16:00:00-04:00"
                 try:
                     tx_rate = self.resp_hist[[x['timestamp'] for x in self.resp_hist].index(tx_time_str)]['price']
                     tx_fiat_val = "%.2f %s" % (tx_value * Decimal(tx_rate)/Decimal("100.0"), "USD")
                 except ValueError:
-                    tx_fiat_val = "%.2f %s" % (self.btc_rate * Decimal(tx_info['value'])/100000000 , "USD")
+                    tx_fiat_val = "%.2f %s" % (self.btc_rate * Decimal(tx_info['value'])/COIN , "USD")
                 except KeyError:
                     tx_fiat_val = _("No data")
             elif self.cur_exchange == "BitcoinVenezuela":
@@ -342,13 +362,7 @@ class Plugin(BasePlugin):
                     tx_fiat_val = "%.2f %s" % (tx_value * Decimal(num), self.fiat_unit())
                 except KeyError:
                     tx_fiat_val = _("No data")
-            elif self.cur_exchange == "Kraken":
-                tx_day_time = int(tx_time / 86400) * 86400
-                try:
-                    num = self.resp_hist[tx_day_time]
-                    tx_fiat_val = "%.2f %s" % (Decimal(str(tx_info['value'])) / 100000000 * Decimal(num), self.fiat_unit())
-                except KeyError:
-                    tx_fiat_val = _("No data")
+
             tx_fiat_val = " "*(12-len(tx_fiat_val)) + tx_fiat_val
             item.setText(5, tx_fiat_val)
             item.setFont(5, QFont(MONOSPACE_FONT))
@@ -383,7 +397,7 @@ class Plugin(BasePlugin):
                 return
             if cur_request != self.fiat_unit():
                 self.config.set_key('currency', cur_request, True)
-                cur_exchange = self.config.get('use_exchange', "BTC-e")
+                cur_exchange = self.config.get('use_exchange', "Blockchain")
                 if (cur_exchange, cur_request) in EXCH_SUPPORT_HIST:
                     hist_checkbox.setEnabled(True)
                 else:
@@ -402,7 +416,7 @@ class Plugin(BasePlugin):
 
         def on_change_ex(x):
             cur_request = str(self.exchanges[x])
-            if cur_request != self.config.get('use_exchange', "BTC-e"):
+            if cur_request != self.config.get('use_exchange', "Blockchain"):
                 self.config.set_key('use_exchange', cur_request, True)
                 self.currencies = []
                 combo.clear()
@@ -425,8 +439,8 @@ class Plugin(BasePlugin):
                 self.win.history_list.setColumnCount(5)
 
         def set_hist_check(hist_checkbox):
-            cur_exchange = self.config.get('use_exchange', "BTC-e")
-            hist_checkbox.setEnabled(cur_exchange in ["BitcoinVenezuela", "Kraken"])
+            cur_exchange = self.config.get('use_exchange', "Blockchain")
+            hist_checkbox.setEnabled(cur_exchange in ["CoinDesk", "Winkdex", "BitcoinVenezuela"])
 
         def set_currencies(combo):
             try:
@@ -440,8 +454,6 @@ class Plugin(BasePlugin):
                 index = self.currencies.index(current_currency)
             except Exception:
                 index = 0
-                if len(self.currencies):
-                    on_change(0)
             combo.blockSignals(False)
             combo.setCurrentIndex(index)
 
@@ -452,13 +464,13 @@ class Plugin(BasePlugin):
                 return
             combo_ex.addItems(self.exchanges)
             try:
-                index = self.exchanges.index(self.config.get('use_exchange', "BTC-e"))
+                index = self.exchanges.index(self.config.get('use_exchange', "Blockchain"))
             except Exception:
                 index = 0
             combo_ex.setCurrentIndex(index)
 
         def ok_clicked():
-            if self.config.get('use_exchange', "BTC-e") in ["CoinDesk", "itBit"]:
+            if self.config.get('use_exchange', "Blockchain") in ["CoinDesk", "itBit"]:
                 self.exchanger.query_rates.set()
             d.accept();
 
@@ -509,8 +521,8 @@ class Plugin(BasePlugin):
             exchange_rate = self.exchanger.exchange(Decimal("1.0"), self.fiat_unit())
             if exchange_rate is not None:
                 btc_amount = fiat_amount/exchange_rate
-                btc_e.setAmount(int(btc_amount*Decimal(100000000)))
-                if fee_e: self.win.update_fee(False)
+                btc_e.setAmount(int(btc_amount*Decimal(COIN)))
+                if fee_e: self.win.update_fee()
         fiat_e.textEdited.connect(fiat_changed)
         def btc_changed():
             if self.exchanger is None:
@@ -519,7 +531,7 @@ class Plugin(BasePlugin):
             if btc_amount is None:
                 fiat_e.setText("")
                 return
-            fiat_amount = self.exchanger.exchange(Decimal(btc_amount)/Decimal(100000000), self.fiat_unit())
+            fiat_amount = self.exchanger.exchange(Decimal(btc_amount)/Decimal(COIN), self.fiat_unit())
             if fiat_amount is not None:
                 pos = fiat_e.cursorPosition()
                 fiat_e.setText("%.2f"%fiat_amount)

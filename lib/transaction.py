@@ -24,6 +24,7 @@ import bitcoin
 from bitcoin import *
 from util import print_error
 import time
+import sys
 import struct
 
 #
@@ -367,32 +368,29 @@ def parse_scriptSig(d, bytes):
         d['address'] = address
         return
 
-    # p2sh transaction, 2 of n
+    # p2sh transaction, m of n
     match = [ opcodes.OP_0 ] + [ opcodes.OP_PUSHDATA4 ] * (len(decoded) - 1)
-
     if not match_decoded(decoded, match):
         print_error("cannot find address in input script", bytes.encode('hex'))
         return
-
     x_sig = [x[1].encode('hex') for x in decoded[1:-1]]
-    d['signatures'] = parse_sig(x_sig)
-    d['num_sig'] = 2
-
     dec2 = [ x for x in script_GetOp(decoded[-1][1]) ]
-    match_2of2 = [ opcodes.OP_2, opcodes.OP_PUSHDATA4, opcodes.OP_PUSHDATA4, opcodes.OP_2, opcodes.OP_CHECKMULTISIG ]
-    match_2of3 = [ opcodes.OP_2, opcodes.OP_PUSHDATA4, opcodes.OP_PUSHDATA4, opcodes.OP_PUSHDATA4, opcodes.OP_3, opcodes.OP_CHECKMULTISIG ]
-    if match_decoded(dec2, match_2of2):
-        x_pubkeys = [ dec2[1][1].encode('hex'), dec2[2][1].encode('hex') ]
-    elif match_decoded(dec2, match_2of3):
-        x_pubkeys = [ dec2[1][1].encode('hex'), dec2[2][1].encode('hex'), dec2[3][1].encode('hex') ]
-    else:
+    m = dec2[0][0] - opcodes.OP_1 + 1
+    n = dec2[-2][0] - opcodes.OP_1 + 1
+    op_m = opcodes.OP_1 + m - 1
+    op_n = opcodes.OP_1 + n - 1
+    match_multisig = [ op_m ] + [opcodes.OP_PUSHDATA4]*n + [ op_n, opcodes.OP_CHECKMULTISIG ]
+    if not match_decoded(dec2, match_multisig):
         print_error("cannot find address in input script", bytes.encode('hex'))
         return
-
-    d['x_pubkeys'] = x_pubkeys
+    x_pubkeys = map(lambda x: x[1].encode('hex'), dec2[1:-2])
     pubkeys = [parse_xpub(x)[0] for x in x_pubkeys]     # xpub, addr = parse_xpub()
+    redeemScript = Transaction.multisig_script(pubkeys, m)
+    # write result in d
+    d['num_sig'] = m
+    d['signatures'] = parse_sig(x_sig)
+    d['x_pubkeys'] = x_pubkeys
     d['pubkeys'] = pubkeys
-    redeemScript = Transaction.multisig_script(pubkeys,2)
     d['redeemScript'] = redeemScript
     d['address'] = hash_160_to_bc_address(hash_160(redeemScript.decode('hex')), 5)
 
@@ -463,7 +461,7 @@ def deserialize(raw):
     d = {}
     start = vds.read_cursor
     d['version'] = vds.read_int32()
-    d['nTime'] = vds.read_uint32()
+	d['nTime'] = vds.read_uint32()
     n_vin = vds.read_compact_size()
     d['inputs'] = list(parse_input(vds) for i in xrange(n_vin))
     n_vout = vds.read_compact_size()
@@ -485,16 +483,53 @@ class Transaction:
 
     def __init__(self, raw):
         self.raw = raw
+        self.inputs = None
 
     def update(self, raw):
         self.raw = raw
+        self.inputs = None
         self.deserialize()
 
+    def update_signatures(self, raw):
+        """Add new signatures to a transaction"""
+        d = deserialize(raw)
+        for i, txin in enumerate(self.inputs):
+            sigs1 = txin.get('signatures')
+            sigs2 = d['inputs'][i].get('signatures')
+            for sig in sigs2:
+                if sig in sigs1:
+                    continue
+                for_sig = Hash(self.tx_for_sig(i).decode('hex'))
+                # der to string
+                order = ecdsa.ecdsa.generator_secp256k1.order()
+                r, s = ecdsa.util.sigdecode_der(sig.decode('hex'), order)
+                sig_string = ecdsa.util.sigencode_string(r, s, order)
+                pubkeys = txin.get('pubkeys')
+                compressed = True
+                for recid in range(4):
+                    public_key = MyVerifyingKey.from_signature(sig_string, recid, for_sig, curve = SECP256k1)
+                    pubkey = point_to_ser(public_key.pubkey.point, compressed).encode('hex')
+                    if pubkey in pubkeys:
+                        public_key.verify_digest(sig_string, for_sig, sigdecode = ecdsa.util.sigdecode_string)
+                        j = pubkeys.index(pubkey)
+                        print_error("adding sig", i, j, pubkey, sig)
+                        self.inputs[i]['signatures'][j] = sig
+                        self.inputs[i]['x_pubkeys'][j] = pubkey
+                        break
+        # redo raw
+        self.raw = self.serialize()
+
+
     def deserialize(self):
+        if self.raw is None:
+            self.raw = self.serialize()
+        if self.inputs is not None:
+            return
         d = deserialize(self.raw)
         self.inputs = d['inputs']
         self.outputs = [(x['type'], x['address'], x['value']) for x in d['outputs']]
         self.locktime = d['lockTime']
+        return d
 
     @classmethod
     def from_io(klass, inputs, outputs, locktime=0, nTime=0):
@@ -502,11 +537,11 @@ class Transaction:
         self.inputs = inputs
         self.outputs = outputs
         self.locktime = locktime
-        print("from_io")
-        if nTime == 0:
-            self.time = int(time.time()) # bitspill
-        else:
-            self.time = nTime
+		print("from_io")		
+        if nTime == 0:		
+            self.time = int(time.time()) # bitspill		
+        else:		
+            self.time = nTime		
         #self.raw = self.serialize()
         return self
 
@@ -540,31 +575,14 @@ class Transaction:
         return self
 
     @classmethod
-    def multisig_script(klass, public_keys, num=None):
+    def multisig_script(klass, public_keys, m):
         n = len(public_keys)
-        if num is None: num = n
-
-        assert num <= n and n in [2,3] , 'Only "2 of 2", and "2 of 3" transactions are supported'
-
-        if num==2:
-            s = '52'
-        elif num == 3:
-            s = '53'
-        else:
-            raise
-
-        for k in public_keys:
-            s += op_push(len(k)/2) + k
-        if n==2:
-            s += '52'
-        elif n==3:
-            s += '53'
-        else:
-            raise
-        s += 'ae'
-
-        return s
-
+        assert n <= 15
+        assert m <= n
+        op_m = format(opcodes.OP_1 + m - 1, 'x')
+        op_n = format(opcodes.OP_1 + n - 1, 'x')
+        keylist = [op_push(len(k)/2) + k for k in public_keys]
+        return op_m + ''.join(keylist) + op_n + 'ae'
 
     @classmethod
     def pay_script(self, output_type, addr):
@@ -622,7 +640,7 @@ class Transaction:
                 script += push_script(x_pubkey)
             else:
                 script = '00' + script          # put op_0 in front of script
-                redeem_script = self.multisig_script(pubkeys,2)
+                redeem_script = self.multisig_script(pubkeys, num_sig)
                 script += push_script(redeem_script)
 
         elif for_sig==i:
@@ -632,14 +650,18 @@ class Transaction:
 
         return script
 
+    def BIP_LI01_sort(self):
+        # See https://github.com/kristovatlas/rfc/blob/master/bips/bip-li01.mediawiki
+        self.inputs.sort(key = lambda i: (i['prevout_hash'], i['prevout_n']))
+        self.outputs.sort(key = lambda o: (o[2], self.pay_script(o[0], o[1])))
 
     def serialize(self, for_sig=None):
         inputs = self.inputs
         outputs = self.outputs
-        time = self.time # bitspill
+		time = self.time # bitspill		
         print("Serializing transaction: time: %d"%time)
         s  = int_to_hex(1,4)                                         # version
-        s += int_to_hex(time,4)   # bitspill                         # nTime
+		s += int_to_hex(time,4)   # bitspill                         # nTime
         s += var_int( len(inputs) )                                  # number of inputs
         for i, txin in enumerate(inputs):
             s += txin['prevout_hash'].decode('hex')[::-1].encode('hex')   # prev hash
@@ -714,13 +736,12 @@ class Transaction:
 
     def sign(self, keypairs):
         for i, txin in enumerate(self.inputs):
-            signatures = filter(None, txin['signatures'])
             num = txin['num_sig']
-            if len(signatures) == num:
-                # continue if this txin is complete
-                continue
-
             for x_pubkey in txin['x_pubkeys']:
+                signatures = filter(None, txin['signatures'])
+                if len(signatures) == num:
+                    # txin is complete
+                    break
                 if x_pubkey in keypairs.keys():
                     print_error("adding signature for", x_pubkey)
                     # add pubkey to txin
@@ -738,11 +759,10 @@ class Transaction:
                     secexp = pkey.secret
                     private_key = ecdsa.SigningKey.from_secret_exponent( secexp, curve = SECP256k1 )
                     public_key = private_key.get_verifying_key()
-                    sig = private_key.sign_digest_deterministic( for_sig, hashfunc=hashlib.sha256, sigencode = ecdsa.util.sigencode_der_canonize )
+                    sig = private_key.sign_digest_deterministic( for_sig, hashfunc=hashlib.sha256, sigencode = ecdsa.util.sigencode_der )
                     assert public_key.verify_digest( sig, for_sig, sigdecode = ecdsa.util.sigdecode_der)
                     txin['signatures'][ii] = sig.encode('hex')
                     self.inputs[i] = txin
-
         print_error("is_complete", self.is_complete())
         self.raw = self.serialize()
 
@@ -778,14 +798,19 @@ class Transaction:
         return out
 
 
-    def required_fee(self, wallet):
+    def requires_fee(self, wallet):
         # see https://en.bitcoin.it/wiki/Transaction_fees
+        #
+        # size must be smaller than 1 kbyte for free tx
         size = len(self.serialize(-1))/2
-        fee = 0
+        if size >= 10000:
+            return True
+        # all outputs must be 0.01 BTC or larger for free tx
         for addr, value in self.get_outputs():
-            if value < DUST_SOFT_LIMIT:
-                fee += MIN_RELAY_TX_FEE
-        threshold = 57600000*4
+            if value < 1000000:
+                return True
+        # priority must be large enough for free tx
+        threshold = 57600000
         weight = 0
         for txin in self.inputs:
             age = wallet.get_confirmations(txin["prevout_hash"])[0]
@@ -793,8 +818,4 @@ class Transaction:
         priority = weight / size
         print_error(priority, threshold)
 
-        if size < 5000 and fee == 0 and priority > threshold:
-            return 0
-        fee += (1 + size / 1000) * MIN_RELAY_TX_FEE
-        print_error(fee)
-        return fee
+        return priority < threshold

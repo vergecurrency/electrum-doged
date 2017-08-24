@@ -2,9 +2,13 @@ import os, sys, re, json
 import platform
 import shutil
 from datetime import datetime
+from decimal import Decimal
 import urlparse
 import urllib
 import threading
+
+def normalize_version(v):
+    return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
 
 class NotEnoughFunds(Exception): pass
 
@@ -44,7 +48,10 @@ class DaemonThread(threading.Thread):
             self.running = False
 
     def print_error(self, *msg):
-        print_error("[%s]"%self.__class__.__name__, *msg)
+        print_error("[%s]" % self.__class__.__name__, *msg)
+
+    def print_msg(self, *msg):
+        print_msg("[%s]" % self.__class__.__name__, *msg)
 
 
 
@@ -104,10 +111,11 @@ def user_dir():
         #raise Exception("No home directory found in environment variables.")
         return
 
-def format_satoshis_plain(x):
-    '''Display a satoshi amount in BTC with 8 decimal places.  Always
-       uses a '.' as a decimal point and has no thousands separator'''
-    return "{:.6f}".format(x / 1000000.0)
+def format_satoshis_plain(x, decimal_point = 8):
+    '''Display a satoshi amount scaled.  Always uses a '.' as a decimal
+    point and has no thousands separator'''
+    scale_factor = pow(10, decimal_point)
+    return "{:.6f}".format(Decimal(x) / scale_factor).rstrip('0').rstrip('.')
 
 def format_satoshis(x, is_diff=False, num_zeros = 0, decimal_point = 6, whitespaces=False):
     from locale import localeconv
@@ -129,7 +137,7 @@ def format_satoshis(x, is_diff=False, num_zeros = 0, decimal_point = 6, whitespa
     if whitespaces:
         result += " " * (decimal_point - len(fract_part))
         result = " " * (15 - len(result)) + result
-    return result
+    return result.decode('utf8')
 
 def format_time(timestamp):
     import datetime
@@ -149,7 +157,12 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
     if since_date is None:
         since_date = datetime.now(target_tz)
 
-    distance_in_time = since_date - from_date
+    td = time_difference(from_date - since_date, include_seconds)
+    return td + " ago" if from_date < since_date else "in " + td
+
+
+def time_difference(distance_in_time, include_seconds):
+    #distance_in_time = since_date - from_date
     distance_in_seconds = int(round(abs(distance_in_time.days * 86400 + distance_in_time.seconds)))
     distance_in_minutes = int(round(distance_in_seconds/60))
 
@@ -157,44 +170,44 @@ def age(from_date, since_date = None, target_tz=None, include_seconds=False):
         if include_seconds:
             for remainder in [5, 10, 20]:
                 if distance_in_seconds < remainder:
-                    return "less than %s seconds ago" % remainder
+                    return "less than %s seconds" % remainder
             if distance_in_seconds < 40:
-                return "half a minute ago"
+                return "half a minute"
             elif distance_in_seconds < 60:
-                return "less than a minute ago"
+                return "less than a minute"
             else:
-                return "1 minute ago"
+                return "1 minute"
         else:
             if distance_in_minutes == 0:
-                return "less than a minute ago"
+                return "less than a minute"
             else:
-                return "1 minute ago"
+                return "1 minute"
     elif distance_in_minutes < 45:
-        return "%s minutes ago" % distance_in_minutes
+        return "%s minutes" % distance_in_minutes
     elif distance_in_minutes < 90:
-        return "about 1 hour ago"
+        return "about 1 hour"
     elif distance_in_minutes < 1440:
-        return "about %d hours ago" % (round(distance_in_minutes / 60.0))
+        return "about %d hours" % (round(distance_in_minutes / 60.0))
     elif distance_in_minutes < 2880:
-        return "1 day ago"
+        return "1 day"
     elif distance_in_minutes < 43220:
-        return "%d days ago" % (round(distance_in_minutes / 1440))
+        return "%d days" % (round(distance_in_minutes / 1440))
     elif distance_in_minutes < 86400:
-        return "about 1 month ago"
+        return "about 1 month"
     elif distance_in_minutes < 525600:
-        return "%d months ago" % (round(distance_in_minutes / 43200))
+        return "%d months" % (round(distance_in_minutes / 43200))
     elif distance_in_minutes < 1051200:
-        return "about 1 year ago"
+        return "about 1 year"
     else:
-        return "over %d years ago" % (round(distance_in_minutes / 525600))
+        return "over %d years" % (round(distance_in_minutes / 525600))
 
 block_explorer_info = {
-    'prohashing.com/explorer/Verge/': ('https://prohashing.com/explorer/Verge',
+    'Verge-Blockchain.info': ('http://verge-blockchain.info/',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
 def block_explorer(config):
-    return config.get('block_explorer', 'prohashing.com/explorer/Verge/')
+    return config.get('block_explorer', 'Verge-Blockchain.info')
 
 def block_explorer_tuple(config):
     return block_explorer_info.get(block_explorer(config))
@@ -203,10 +216,10 @@ def block_explorer_URL(config, kind, item):
     be_tuple = block_explorer_tuple(config)
     if not be_tuple:
         return
-    #kind_str = be_tuple[1].get(kind)
-    #if not kind_str:
-    #    return
-    url_parts = [be_tuple[0], item]
+    kind_str = be_tuple[1].get(kind)
+    if not kind_str:
+        return
+    url_parts = [be_tuple[0], kind_str, item]
     return "/".join(url_parts)
 
 # URL decode
@@ -215,14 +228,14 @@ def block_explorer_URL(config, kind, item):
 
 def parse_URI(uri):
     import bitcoin
-    from decimal import Decimal
+    from bitcoin import COIN
 
     if ':' not in uri:
         assert bitcoin.is_address(uri)
-        return uri, None, None, None, None
+        return {'address': uri}
 
     u = urlparse.urlparse(uri)
-    assert u.scheme == 'VERGE'
+    assert u.scheme == 'verge'
 
     address = u.path
 
@@ -237,28 +250,30 @@ def parse_URI(uri):
         if len(v)!=1:
             raise Exception('Duplicate Key', k)
 
-    amount = label = message = request_url = ''
-    if 'amount' in pq:
-        am = pq['amount'][0]
+    out = {k: v[0] for k, v in pq.items()}
+    if address:
+        assert bitcoin.is_address(address)
+        out['address'] = address
+    if 'amount' in out:
+        am = out['amount']
         m = re.match('([0-9\.]+)X([0-9])', am)
         if m:
             k = int(m.group(2)) - 8
             amount = Decimal(m.group(1)) * pow(  Decimal(10) , k)
         else:
-            amount = Decimal(am) * 1000000
-    if 'message' in pq:
-        message = pq['message'][0].decode('utf8')
-    if 'label' in pq:
-        label = pq['label'][0]
-    if 'r' in pq:
-        request_url = pq['r'][0]
+            amount = Decimal(am) * COIN
+        out['amount'] = int(amount)
+    if 'message' in out:
+        out['message'] = out['message'].decode('utf8')
+        out['memo'] = out['message']
+    if 'time' in out:
+        out['time'] = int(out['time'])
+    if 'exp' in out:
+        out['exp'] = int(out['exp'])
+    if 'sig' in out:
+        out['sig'] = bitcoin.base_decode(out['sig'], None, base=58).encode('hex')
 
-    if request_url != '':
-        return address, amount, label, message, request_url
-
-    assert bitcoin.is_address(address)
-
-    return address, amount, label, message, request_url
+    return out
 
 
 def create_URI(addr, amount, message):
@@ -272,7 +287,7 @@ def create_URI(addr, amount, message):
         if type(message) == unicode:
             message = message.encode('utf8')
         query.append('message=%s'%urllib.quote(message))
-    p = urlparse.ParseResult(scheme='VERGE', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urlparse.ParseResult(scheme='verge', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return urlparse.urlunparse(p)
 
 
@@ -350,8 +365,7 @@ class SocketPipe:
                 traceback.print_exc(file=sys.stderr)
                 data = ''
 
-            if not data:
-                self.socket.close()
+            if not data:  # Connection closed remotely
                 return None
             self.message += data
             self.recv_time = time.time()

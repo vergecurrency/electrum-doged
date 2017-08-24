@@ -1,10 +1,10 @@
 from PyQt4.QtGui import *
-from electrum_xvg.plugins import BasePlugin, hook
-from electrum_xvg.i18n import _
+from electrum.plugins import BasePlugin, hook
+from electrum.i18n import _
 
 
 import datetime
-from electrum_xvg.util import format_satoshis
+from electrum.util import format_satoshis
 
 
 try:
@@ -108,7 +108,7 @@ class Plugin(BasePlugin):
         ax.add_artist(anchored_box)
 
 
-        plt.ylabel('mXVG')
+        plt.ylabel('mBTC')
         plt.xlabel('Dates')
         xfmt = md.DateFormatter('%Y-%m-%d')
         ax.xaxis.set_major_formatter(xfmt)

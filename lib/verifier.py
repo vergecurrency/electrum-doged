@@ -36,16 +36,13 @@ class SPV(util.DaemonThread):
         self.queue = Queue.Queue()
 
     def run(self):
-        print "verifier thread running"
         requested_merkle = set()
         while self.is_running():
             unverified = self.wallet.get_unverified_txs()
             for (tx_hash, tx_height) in unverified:
-                print "pending verification %s"%tx_hash
-                if tx_hash not in self.merkle_roots and tx_hash not in requested_merkle:
-                    print "sending network request for merkle_root"
+                if self.merkle_roots.get(tx_hash) is None and tx_hash not in requested_merkle:
                     if self.network.send([ ('blockchain.transaction.get_merkle',[tx_hash, tx_height]) ], self.queue.put):
-                        self.print_error('requested merkle', tx_hash)
+                        self.print_error('requesting merkle', tx_hash)
                         requested_merkle.add(tx_hash)
             try:
                 r = self.queue.get(timeout=0.1)
@@ -71,14 +68,11 @@ class SPV(util.DaemonThread):
 
 
     def verify_merkle(self, tx_hash, result):
-        print "checking a merkle", tx_hash, result
         tx_height = result.get('block_height')
         pos = result.get('pos')
         merkle_root = self.hash_merkle_root(result['merkle'], tx_hash, pos)
         header = self.network.get_header(tx_height)
-        if not header: 
-            self.print_error("No header found")
-            return
+        if not header: return
         if header.get('merkle_root') != merkle_root:
             self.print_error("merkle verification failed for", tx_hash)
             return
@@ -98,7 +92,7 @@ class SPV(util.DaemonThread):
 
 
     def undo_verifications(self, height):
-        tx_hashes = selt.wallet.undo_verifications(height)
+        tx_hashes = self.wallet.undo_verifications(height)
         for tx_hash in tx_hashes:
             self.print_error("redoing", tx_hash)
             self.merkle_roots.pop(tx_hash, None)

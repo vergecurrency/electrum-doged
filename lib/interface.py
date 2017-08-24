@@ -48,6 +48,9 @@ def Interface(server, response_queue, config = None):
     else:
         raise Exception('Unknown protocol: %s'%protocol)
 
+# Connection status
+CS_OPENING, CS_CONNECTED, CS_FAILED = range(3)
+
 class TcpInterface(threading.Thread):
 
     def __init__(self, server, response_queue, config = None):
@@ -57,9 +60,7 @@ class TcpInterface(threading.Thread):
         # Set by stop(); no more data is exchanged and the thread exits after gracefully
         # closing the socket
         self.disconnect = False
-        # Initially True to avoid a race; set to False on failure to create a socket or when
-        # it is closed
-        self.connected = True
+        self._status = CS_OPENING
         self.debug = False # dump network messages. can be changed at runtime using the console
         self.message_id = 0
         self.response_queue = response_queue
@@ -71,6 +72,7 @@ class TcpInterface(threading.Thread):
         # parse server
         self.server = server
         self.host, self.port, self.protocol = self.server.split(':')
+        self.host = str(self.host)
         self.port = int(self.port)
         self.use_ssl = (self.protocol == 's')
 
@@ -117,31 +119,6 @@ class TcpInterface(threading.Thread):
             queue.put((self, {'method':method, 'params':params, 'result':result, 'id':_id}))
 
 
-    def check_host_name(self, peercert, name):
-        """Simple certificate/host name checker.  Returns True if the
-        certificate matches, False otherwise.  Does not support
-        wildcards."""
-        # Check that the peer has supplied a certificate.
-        # None/{} is not acceptable.
-        if not peercert:
-            return False
-        if peercert.has_key("subjectAltName"):
-            for typ, val in peercert["subjectAltName"]:
-                if typ == "DNS" and val == name:
-                    return True
-        else:
-            # Only check the subject DN if there is no subject alternative
-            # name.
-            cn = None
-            for attr, val in peercert["subject"]:
-                # Use most-specific (last) commonName attribute.
-                if attr == "commonName":
-                    cn = val
-            if cn is not None:
-                return cn == name
-        return False
-
-
     def get_simple_socket(self):
         try:
             l = socket.getaddrinfo(self.host, self.port, socket.AF_UNSPEC, socket.SOCK_STREAM)
@@ -152,6 +129,8 @@ class TcpInterface(threading.Thread):
             try:
                 s = socket.socket(res[0], socket.SOCK_STREAM)
                 s.connect(res[4])
+                s.settimeout(2)
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
                 return s
             except BaseException as e:
                 continue
@@ -172,13 +151,15 @@ class TcpInterface(threading.Thread):
                     s = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_SSLv23, cert_reqs=ssl.CERT_REQUIRED, ca_certs=ca_path, do_handshake_on_connect=True)
                 except ssl.SSLError, e:
                     s = None
-                if s and self.check_host_name(s.getpeercert(), self.host):
+                if s and check_host_name(s.getpeercert(), self.host):
                     self.print_error("SSL certificate signed by CA")
                     return s
 
                 # get server certificate.
                 # Do not use ssl.get_server_certificate because it does not work with proxy
                 s = self.get_simple_socket()
+                if s is None:
+                    return
                 try:
                     s = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_SSLv23, cert_reqs=ssl.CERT_NONE, ca_certs=None)
                 except ssl.SSLError, e:
@@ -199,9 +180,6 @@ class TcpInterface(threading.Thread):
         s = self.get_simple_socket()
         if s is None:
             return
-
-        s.settimeout(2)
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
 
         if self.use_ssl:
             try:
@@ -225,7 +203,6 @@ class TcpInterface(threading.Thread):
                     try:
                         x = x509.X509()
                         x.parse(cert)
-                        x.slow_parse()
                     except:
                         traceback.print_exc(file=sys.stderr)
                         self.print_error("wrong certificate")
@@ -275,11 +252,13 @@ class TcpInterface(threading.Thread):
             self.message_id += 1
 
     def is_connected(self):
-        return self.connected and not self.disconnect
+        '''True if status is connected'''
+        return self._status == CS_CONNECTED and not self.disconnect
 
     def stop(self):
-        self.disconnect = True
-        self.print_error("disconnecting")
+        if not self.disconnect:
+            self.disconnect = True
+            self.print_error("disconnecting")
 
     def maybe_ping(self):
         # ping the server with server.version
@@ -299,7 +278,7 @@ class TcpInterface(threading.Thread):
                 return
             # If remote side closed the socket, SocketPipe closes our socket and returns None
             if response is None:
-                self.connected = False  # Don't re-close the socket
+                self.disconnect = True
                 self.print_error("connection closed remotely")
             else:
                 self.process_response(response)
@@ -310,32 +289,62 @@ class TcpInterface(threading.Thread):
             self.pipe = util.SocketPipe(s)
             s.settimeout(0.1)
             self.print_error("connected")
+            self._status = CS_CONNECTED
             # Indicate to parent that we've connected
-            self.change_status()
+            self.notify_status()
             while self.is_connected():
                 self.maybe_ping()
                 self.send_requests()
                 self.get_and_process_response()
-            if self.connected:  # Don't shutdown() a closed socket
-                s.shutdown(socket.SHUT_RDWR)
-                s.close()
+            s.shutdown(socket.SHUT_RDWR)
+            s.close()
 
         # Also for the s is None case 
-        self.connected = False
+        self._status = CS_FAILED
         # Indicate to parent that the connection is now down
-        self.change_status()
+        self.notify_status()
 
-    def change_status(self):
+    def notify_status(self):
+        '''Notify owner that we have just connected or just failed the connection.
+        Owner determines which through e.g. testing is_connected()'''
         self.response_queue.put((self, None))
 
 
+def _match_hostname(name, val):
+    if val == name:
+        return True
+
+    return val.startswith('*.') and name.endswith(val[1:])
+
+
+def check_host_name(peercert, name):
+    """Simple certificate/host name checker.  Returns True if the
+    certificate matches, False otherwise."""
+    # Check that the peer has supplied a certificate.
+    # None/{} is not acceptable.
+    if not peercert:
+        return False
+    if peercert.has_key("subjectAltName"):
+        for typ, val in peercert["subjectAltName"]:
+            if typ == "DNS" and _match_hostname(name, val):
+                return True
+    else:
+        # Only check the subject DN if there is no subject alternative
+        # name.
+        cn = None
+        for attr, val in peercert["subject"]:
+            # Use most-specific (last) commonName attribute.
+            if attr == "commonName":
+                cn = val
+        if cn is not None:
+            return _match_hostname(name, cn)
+    return False
 
 
 def check_cert(host, cert):
     try:
         x = x509.X509()
         x.parse(cert)
-        x.slow_parse()
     except:
         traceback.print_exc(file=sys.stdout)
         return

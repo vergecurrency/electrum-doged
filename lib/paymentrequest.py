@@ -18,14 +18,12 @@
 
 
 import hashlib
-import httplib
 import os.path
 import re
 import sys
 import threading
 import time
 import traceback
-import urllib2
 import urlparse
 import requests
 
@@ -50,7 +48,7 @@ ca_list, ca_keyID = x509.load_certificates(ca_path)
 # status of payment requests
 PR_UNPAID  = 0
 PR_EXPIRED = 1
-PR_SENT    = 2     # sent but not propagated
+PR_UNKNOWN = 2     # sent but not propagated
 PR_PAID    = 3     # send and propagated
 PR_ERROR   = 4     # could not parse
 
@@ -60,10 +58,9 @@ import json
 def get_payment_request(url):
     u = urlparse.urlparse(url)
     if u.scheme in ['http', 'https']:
-        connection = httplib.HTTPConnection(u.netloc) if u.scheme == 'http' else httplib.HTTPSConnection(u.netloc)
-        connection.request("GET", u.geturl(), headers=REQUEST_HEADERS)
-        response = connection.getresponse()
-        data = response.read()
+        response = requests.request('GET', url, headers=REQUEST_HEADERS)
+        data = response.content
+        print_error('fetched payment request', url, len(data))
     elif u.scheme == 'file':
         with open(u.path, 'r') as f:
             data = f.read()
@@ -101,15 +98,29 @@ class PaymentRequest:
         self.memo = self.details.memo
         self.payment_url = self.details.payment_url
 
-    def verify(self):
+    def verify(self, contacts):
+        if not self.raw:
+            self.error = "Empty request"
+            return
+        pr = pb2.PaymentRequest()
+        pr.ParseFromString(self.raw)
+        if not pr.signature:
+            self.error = "No signature"
+            return
+
+        if pr.pki_type in ["x509+sha256", "x509+sha1"]:
+            return self.verify_x509(pr)
+        elif pr.pki_type in ["dnssec+btc", "dnssec+ecdsa"]:
+            return self.verify_dnssec(pr, contacts)
+        else:
+            self.error = "ERROR: Unsupported PKI Type for Message Signature"
+            return False
+
+    def verify_x509(self, paymntreq):
+        """ verify chain of certificates. The last certificate is the CA"""
         if not ca_list:
             self.error = "Trusted certificate authorities list not found"
             return False
-        paymntreq = pb2.PaymentRequest()
-        paymntreq.ParseFromString(self.raw)
-        if not paymntreq.signature:
-            self.error = "No signature"
-            return
         cert = pb2.X509Certificates()
         cert.ParseFromString(paymntreq.pki_data)
         cert_num = len(cert.certificate)
@@ -183,15 +194,34 @@ class PaymentRequest:
             verify = pubkey0.verify(sigBytes, x509.PREFIX_RSA_SHA256 + hashBytes)
         elif paymntreq.pki_type == "x509+sha1":
             verify = pubkey0.hashAndVerify(sigBytes, msgBytes)
-        else:
-            self.error = "ERROR: Unsupported PKI Type for Message Signature"
-            return False
         if not verify:
             self.error = "ERROR: Invalid Signature for Payment Request Data"
             return False
         ### SIG Verified
         self.error = 'Signed by Trusted CA: ' + ca.get_common_name()
         return True
+
+    def verify_dnssec(self, pr, contacts):
+        sig = pr.signature
+        alias = pr.pki_data
+        info = contacts.resolve(alias)
+        if info.get('validated') is not True:
+            self.error = "Alias verification failed (DNSSEC)"
+            return False
+        if pr.pki_type == "dnssec+btc":
+            self.requestor = alias
+            address = info.get('address')
+            pr.signature = ''
+            message = pr.SerializeToString()
+            if bitcoin.verify_message(address, sig, message):
+                self.error = 'Verified with DNSSEC'
+                return True
+            else:
+                self.error = "verify failed"
+                return False
+        else:
+            self.error = "unknown algo"
+            return False
 
     def has_expired(self):
         return self.details.expires and self.details.expires < int(time.time())
@@ -223,7 +253,7 @@ class PaymentRequest:
         if not self.details.payment_url:
             return False, "no url"
 
-        paymnt = paymentrequest_pb2.Payment()
+        paymnt = pb2.Payment()
         paymnt.merchant_data = pay_det.merchant_data
         paymnt.transactions.append(raw_tx)
 
@@ -257,36 +287,79 @@ class PaymentRequest:
 
 
 
-
-def make_payment_request(outputs, memo, time, expires, key_path, cert_path):
+def make_unsigned_request(req):
+    from transaction import Transaction
+    addr = req['address']
+    time = req.get('time', 0)
+    exp = req.get('exp', 0)
+    if time and type(time) != int:
+        time = 0
+    if exp and type(exp) != int:
+        exp = 0
+    amount = req['amount']
+    if amount is None:
+        amount = 0
+    memo = req['memo']
+    script = Transaction.pay_script('address', addr).decode('hex')
+    outputs = [(script, amount)]
     pd = pb2.PaymentDetails()
     for script, amount in outputs:
         pd.outputs.add(amount=amount, script=script)
     pd.time = time
-    pd.expires = expires
+    pd.expires = time + exp if exp else 0
     pd.memo = memo
     pr = pb2.PaymentRequest()
     pr.serialized_payment_details = pd.SerializeToString()
     pr.signature = ''
-    pr = pb2.PaymentRequest()
-    pr.serialized_payment_details = pd.SerializeToString()
-    pr.signature = ''
+    return pr
+
+
+def sign_request_with_alias(pr, alias, alias_privkey):
+    pr.pki_type = 'dnssec+btc'
+    pr.pki_data = str(alias)
+    message = pr.SerializeToString()
+    ec_key = bitcoin.regenerate_key(alias_privkey)
+    address = bitcoin.address_from_private_key(alias_privkey)
+    compressed = bitcoin.is_compressed(alias_privkey)
+    pr.signature = ec_key.sign_message(message, compressed, address)
+
+
+def sign_request_with_x509(pr, key_path, cert_path):
+    import tlslite
+    with open(key_path, 'r') as f:
+        rsakey = tlslite.utils.python_rsakey.Python_RSAKey.parsePEM(f.read())
+    with open(cert_path, 'r') as f:
+        chain = tlslite.X509CertChain()
+        chain.parsePemList(f.read())
+    certificates = pb2.X509Certificates()
+    certificates.certificate.extend(map(lambda x: str(x.bytes), chain.x509List))
+    pr.pki_type = 'x509+sha256'
+    pr.pki_data = certificates.SerializeToString()
+    msgBytes = bytearray(pr.SerializeToString())
+    hashBytes = bytearray(hashlib.sha256(msgBytes).digest())
+    sig = rsakey.sign(x509.PREFIX_RSA_SHA256 + hashBytes)
+    pr.signature = bytes(sig)
+
+
+def serialize_request(req):
+    pr = make_unsigned_request(req)
+    signature = req.get('sig')
+    requestor = req.get('name')
+    if requestor and signature:
+        pr.signature = signature.decode('hex')
+        pr.pki_type = 'dnssec+btc'
+        pr.pki_data = str(requestor)
+    return pr
+
+
+def make_request(config, req):
+    pr = make_unsigned_request(req)
+    key_path = config.get('ssl_privkey')
+    cert_path = config.get('ssl_chain')
     if key_path and cert_path:
-        import tlslite
-        with open(key_path, 'r') as f:
-            rsakey = tlslite.utils.python_rsakey.Python_RSAKey.parsePEM(f.read())
-        with open(cert_path, 'r') as f:
-            chain = tlslite.X509CertChain()
-            chain.parsePemList(f.read())
-        certificates = pb2.X509Certificates()
-        certificates.certificate.extend(map(lambda x: str(x.bytes), chain.x509List))
-        pr.pki_type = 'x509+sha256'
-        pr.pki_data = certificates.SerializeToString()
-        msgBytes = bytearray(pr.SerializeToString())
-        hashBytes = bytearray(hashlib.sha256(msgBytes).digest())
-        sig = rsakey.sign(x509.PREFIX_RSA_SHA256 + hashBytes)
-        pr.signature = bytes(sig)
-    return pr.SerializeToString()
+        sign_request_with_x509(pr, key_path, cert_path)
+    return pr
+
 
 
 

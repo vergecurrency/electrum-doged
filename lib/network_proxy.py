@@ -16,20 +16,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import socket
-import time
-import sys
-import os
 import threading
-import traceback
-import json
 import Queue
 
 import util
 from network import Network
-from util import print_error, print_stderr, parse_json
+from util import print_error
 from simple_config import SimpleConfig
-from daemon import NetworkServer
 from network import serialize_proxy, serialize_server
 
 
@@ -68,10 +61,13 @@ class NetworkProxy(util.DaemonThread):
         self.blockchain_height = 0
         self.server_height = 0
         self.interfaces = []
+        self.jobs = []
 
 
     def run(self):
         while self.is_running():
+            for job in self.jobs:
+                job()
             try:
                 response = self.pipe.get()
             except util.timeout:
@@ -209,8 +205,8 @@ class NetworkProxy(util.DaemonThread):
     def set_parameters(self, host, port, protocol, proxy, auto_connect):
         proxy_str = serialize_proxy(proxy)
         server_str = serialize_server(host, port, protocol)
-        self.config.set_key('auto_cycle', auto_connect, True)
-        self.config.set_key("proxy", proxy_str, True)
+        self.config.set_key('auto_connect', auto_connect, False)
+        self.config.set_key("proxy", proxy_str, False)
         self.config.set_key("server", server_str, True)
         # abort if changes were not allowed by config
         if self.config.get('server') != server_str or self.config.get('proxy') != proxy_str:

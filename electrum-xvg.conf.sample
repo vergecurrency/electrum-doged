@@ -1,4 +1,4 @@
-# Configuration file for the electrum client
+# Configuration file for the verge electrum client
 # Settings defined here are shared across wallets
 #
 # copy this file to /etc/electrum-xvg.conf if you want read-only settings

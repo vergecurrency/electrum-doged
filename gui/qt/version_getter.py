@@ -16,8 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-import threading, httplib, re, socket
+import threading, re, socket
 import webbrowser
+import requests
+
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
@@ -34,15 +36,13 @@ class VersionGetter(threading.Thread):
 
     def run(self):
         try:
-            con = httplib.HTTPSConnection('electrum-xvg.org', timeout=5)
-            con.request("GET", "/version")
-            res = con.getresponse()
-        except socket.error as msg:
+            res = requests.request("GET", "http://electrum-verge.xyz/version")
+        except:
             print_error("Could not retrieve version information")
             return
 
-        if res.status == 200:
-            latest_version = res.read()
+        if res.status_code == 200:
+            latest_version = res.text
             latest_version = latest_version.replace("\n","")
             if(re.match('^\d+(\.\d+)*$', latest_version)):
                 self.label.callback(latest_version)
@@ -94,16 +94,16 @@ class UpdateLabel(QLabel):
         self.dialog.done(0)
 
     def open_website(self):
-        webbrowser.open("http://electrum-xvg.space/")
+        webbrowser.open("http://electrum-verge.xyz/download.html")
         self.dialog.done(0)
 
     def mouseReleaseEvent(self, event):
         dialog = QDialog(self)
-        dialog.setWindowTitle(_('Electrum update'))
+        dialog.setWindowTitle(_('Electrum-XVG update'))
         dialog.setModal(1)
 
         main_layout = QGridLayout()
-        main_layout.addWidget(QLabel(_("A new version of Electrum is available:")+" " + self.latest_version), 0,0,1,3)
+        main_layout.addWidget(QLabel(_("A new version of Electrum-XVG is available:")+" " + self.latest_version), 0,0,1,3)
 
         ignore_version = QPushButton(_("Ignore this version"))
         ignore_version.clicked.connect(self.ignore_this_version)

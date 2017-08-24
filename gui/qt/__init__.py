@@ -57,7 +57,7 @@ class OpenFileEventFilter(QObject):
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.FileOpen:
             if len(self.windows) >= 1:
-                self.windows[0].pay_from_URI(event.url().toEncoded())
+                self.windows[0].pay_to_URI(event.url().toEncoded())
                 return True
         return False
 
@@ -73,9 +73,6 @@ class ElectrumGui:
         if app is None:
             self.app = QApplication(sys.argv)
         self.app.installEventFilter(self.efilter)
-        # let plugins know that we are using the qt gui
-        always_hook('init_qt_app', self.app)
-
 
     def build_tray_menu(self):
         m = QMenu()
@@ -104,8 +101,6 @@ class ElectrumGui:
 
     def close(self):
         self.current_window.close()
-
-
 
     def go_full(self):
         self.config.set_key('lite_mode', False, True)
@@ -145,7 +140,7 @@ class ElectrumGui:
         return int(qtVersion[0]) >= 4 and int(qtVersion[2]) >= 7
 
     def set_url(self, uri):
-        self.current_window.pay_from_URI(uri)
+        self.current_window.pay_to_URI(uri)
 
     def run_wizard(self, storage, action):
         import installwizard
@@ -158,7 +153,7 @@ class ElectrumGui:
                     QMessageBox.information(None, _('Warning'), _('The file was removed'), _('OK'))
                     return
                 return
-        wizard = installwizard.InstallWizard(self.config, self.network, storage)
+        wizard = installwizard.InstallWizard(self.config, self.network, storage, self.app)
         wizard.show()
         if action == 'new':
             action, wallet_type = wizard.restore_or_create()
@@ -177,7 +172,7 @@ class ElectrumGui:
         last_wallet = self.config.get('gui_last_wallet')
         if last_wallet is not None and self.config.get('wallet_path') is None:
             if os.path.exists(last_wallet):
-                self.config.read_only_options['default_wallet_path'] = last_wallet
+                self.config.cmdline_options['default_wallet_path'] = last_wallet
         try:
             storage = WalletStorage(self.config.get_wallet_path())
         except BaseException as e:

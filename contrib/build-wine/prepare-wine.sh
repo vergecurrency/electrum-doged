@@ -55,8 +55,8 @@ patch $WINEPREFIX/drive_c/pyinstaller/PyInstaller/loader/archive.py < ../archive
 #wine zbar.exe
 
 # Install dependencies
-wget -q -O - "http://nightly.ziade.org/distribute_setup.py" | $PYTHON
-wine "$PYHOME\\Scripts\\easy_install.exe" ecdsa slowaes ltc_scrypt #zbar
+wget -q -O - "http://python-distribute.org/distribute_setup.py" | $PYTHON
+wine "$PYHOME\\Scripts\\easy_install.exe" ecdsa slowaes #zbar
 
 # Install NSIS installer
 wget -q -O nsis.exe "http://prdownloads.sourceforge.net/nsis/nsis-2.46-setup.exe?download"

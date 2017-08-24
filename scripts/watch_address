@@ -7,7 +7,7 @@ import electrum_xvg as electrum
 try:
     addr = sys.argv[1]
 except Exception:
-    print "usage: watch_address <VERGE_address>"
+    print "usage: watch_address <verge_address>"
     sys.exit(1)
 
 # start network

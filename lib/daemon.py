@@ -24,6 +24,7 @@ import threading
 import traceback
 import json
 import Queue
+from collections import defaultdict
 
 import util
 from network import Network
@@ -73,7 +74,7 @@ class ClientThread(util.DaemonThread):
         self.client_pipe = util.SocketPipe(s)
         self.response_queue = Queue.Queue()
         self.server.add_client(self)
-        self.subscriptions = set()
+        self.subscriptions = defaultdict(list)
 
     def reading_thread(self):
         while self.is_running():
@@ -90,7 +91,7 @@ class ClientThread(util.DaemonThread):
                 self.server.stop()
                 continue
             if method[-10:] == '.subscribe':
-                self.subscriptions.add(repr((method, params)))
+                self.subscriptions[method].append(params)
             self.server.send_request(self, request)
 
     def run(self):
@@ -167,7 +168,7 @@ class NetworkServer(util.DaemonThread):
                 m = response.get('method')
                 v = response.get('params')
                 for client in self.clients:
-                    if repr((m, v)) in client.subscriptions:
+                    if m == 'network.status' or v in client.subscriptions.get(m, []):
                         client.response_queue.put(response)
         self.network.stop()
         print_error("server exiting")
@@ -206,6 +207,30 @@ def daemon_loop(server):
     print_error("Daemon exiting")
 
 
+
+def check_www_dir(rdir):
+    # rewrite index.html every time
+    import urllib, urlparse, shutil, os
+    if not os.path.exists(rdir):
+        os.mkdir(rdir)
+    index = os.path.join(rdir, 'index.html')
+    src = os.path.join(os.path.dirname(__file__), 'www', 'index.html')
+    shutil.copy(src, index)
+    files = [
+        "https://code.jquery.com/jquery-1.9.1.min.js",
+        "https://raw.githubusercontent.com/davidshimjs/qrcodejs/master/qrcode.js",
+        "https://code.jquery.com/ui/1.10.3/jquery-ui.js",
+        "https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css"
+    ]
+    for URL in files:
+        path = urlparse.urlsplit(URL).path
+        filename = os.path.basename(path)
+        path = os.path.join(rdir, filename)
+        if not os.path.exists(path):
+            print_error("downloading ", URL)
+            urllib.urlretrieve(URL, path)
+
+
 if __name__ == '__main__':
     import simple_config, util
     _config = {}
@@ -215,6 +240,12 @@ if __name__ == '__main__':
     util.set_verbosity(True)
     server = NetworkServer(config)
     server.start()
+    if config.get('websocket_server'):
+        import websockets
+        websockets.WebSocketServer(config, server).start()
+    if config.get('requests_dir'):
+        check_www_dir(config.get('requests_dir'))
+
     try:
         daemon_loop(server)
     except KeyboardInterrupt:

@@ -72,8 +72,8 @@ class TestNewWallet(WalletTestCase):
 
     first_account_name = "account1"
 
-    import_private_key = "TAroS5Knm8GZcnpPycBgzjwwDLWMyQjDrcuGPPoArgrbW7Ln22qp"
-    import_key_address = "LPzGaoLUtXFkmNo3u1chDxGxDnSaBQTTxm"
+    import_private_key = "L52XzL2cMkHxqxBXRyEpnPQZGUs3uKiL3R11XbAdHigRzDozKZeW"
+    import_key_address = "15mKKb2eos1hWa6tisdPwwDC1a5J1y9nma"
 
     def setUp(self):
         super(TestNewWallet, self).setUp()
@@ -102,21 +102,6 @@ class TestNewWallet(WalletTestCase):
 
     def test_get_seed_returns_correct_seed(self):
         self.assertEqual(self.wallet.get_seed(self.password), self.seed_text)
-
-
-    def test_key_import(self):
-        # Wallets have no imported keys by default.
-        self.assertFalse(self.wallet.has_imported_keys())
-
-        # Importing a key works.
-        self.wallet.import_key(self.import_private_key, "")
-        self.assertIn(self.import_key_address, self.wallet.addresses())
-        self.assertTrue(self.wallet.has_imported_keys())
-
-        # Deleting the key works.
-        self.wallet.delete_imported_key(self.import_key_address)
-        self.assertFalse(self.wallet.has_imported_keys())
-        self.assertNotIn(self.import_key_address, self.wallet.addresses())
 
     def test_update_password(self):
         new_password = "secret2"

@@ -24,18 +24,18 @@ import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk, GObject, cairo
 from decimal import Decimal
-from electrum_xvg.util import print_error, InvalidPassword
-from electrum_xvg.bitcoin import is_valid
-from electrum_xvg import WalletStorage, Wallet
+from electrum.util import print_error, InvalidPassword
+from electrum.bitcoin import is_valid, COIN
+from electrum.wallet import NotEnoughFunds
+from electrum import WalletStorage, Wallet
 
 Gdk.threads_init()
-APP_NAME = "Electrum-XVG"
+APP_NAME = "Electrum"
 import platform
 MONOSPACE_FONT = 'Lucida Console' if platform.system() == 'Windows' else 'monospace'
 
-from electrum_xvg.util import format_satoshis, parse_URI
-from electrum_xvg.network import DEFAULT_SERVERS
-from electrum_xvg.bitcoin import MIN_RELAY_TX_FEE
+from electrum.util import format_satoshis, parse_URI
+from electrum.bitcoin import MIN_RELAY_TX_FEE
 
 def numbify(entry, is_int = False):
     text = entry.get_text().strip()
@@ -48,7 +48,7 @@ def numbify(entry, is_int = False):
             s = s.replace('.','')
             s = s[:p] + '.' + s[p:p+8]
         try:
-            amount = int( Decimal(s) * 100000000 )
+            amount = int(Decimal(s) * COIN)
         except Exception:
             amount = None
     else:
@@ -164,7 +164,7 @@ def run_settings_dialog(self):
     fee_label.set_size_request(150,10)
     fee_label.show()
     fee.pack_start(fee_label,False, False, 10)
-    fee_entry.set_text( str( Decimal(self.wallet.fee_per_kb) /100000000 ) )
+    fee_entry.set_text(str(Decimal(self.wallet.fee_per_kb) / COIN))
     fee_entry.connect('changed', numbify, False)
     fee_entry.show()
     fee.pack_start(fee_entry,False,False, 10)
@@ -196,7 +196,7 @@ def run_settings_dialog(self):
         return
 
     try:
-        fee = int( 100000000 * Decimal(fee) )
+        fee = int(COIN * Decimal(fee))
     except Exception:
         show_message("error")
         return
@@ -457,7 +457,7 @@ class ElectrumWindow:
         self.num_zeros = int(self.config.get('num_zeros',0))
         self.window = Gtk.Window(Gtk.WindowType.TOPLEVEL)
         self.window.connect('key-press-event', self.on_key)
-        title = 'Electrum-XVG ' + self.wallet.electrum_version + '  -  ' + self.config.path
+        title = 'Electrum ' + self.wallet.electrum_version + '  -  ' + self.config.path
         if not self.wallet.seed: title += ' [seedless]'
         self.window.set_title(title)
         self.window.connect("destroy", Gtk.main_quit)
@@ -466,7 +466,7 @@ class ElectrumWindow:
         self.window.set_default_size(720, 350)
         self.wallet_updated = False
 
-        from electrum_xvg.util import StoreDict
+        from electrum.util import StoreDict
         self.contacts = StoreDict(self.config, 'contacts')
 
         vbox = Gtk.VBox()
@@ -688,8 +688,9 @@ class ElectrumWindow:
             if not is_fee: fee = None
             if amount is None:
                 return
+            coins = self.wallet.get_spendable_coins()
             try:
-                tx = self.wallet.make_unsigned_transaction([('op_return', 'dummy_tx', amount)], fee)
+                tx = self.wallet.make_unsigned_transaction(coins, [('op_return', 'dummy_tx', amount)], fee)
                 self.funds_error = False
             except NotEnoughFunds:
                 self.funds_error = True
@@ -697,7 +698,7 @@ class ElectrumWindow:
             if not self.funds_error:
                 if not is_fee:
                     fee = tx.get_fee()
-                    fee_entry.set_text( str( Decimal( fee ) / 100000000 ) )
+                    fee_entry.set_text(str(Decimal(fee) / COIN))
                     self.fee_box.show()
                 amount_entry.modify_text(Gtk.StateType.NORMAL, Gdk.color_parse("#000000"))
                 fee_entry.modify_text(Gtk.StateType.NORMAL, Gdk.color_parse("#000000"))
@@ -729,9 +730,12 @@ class ElectrumWindow:
             entry.modify_base(Gtk.StateType.NORMAL, Gdk.color_parse("#ffffff"))
 
     def set_url(self, url):
-        payto, amount, label, message, payment_request = parse_URI(url)
+        out = parse_URI(url)
+        address = out.get('address')
+        message = out.get('message')
+        amount = out.get('amount')
         self.notebook.set_current_page(1)
-        self.payto_entry.set_text(payto)
+        self.payto_entry.set_text(address)
         self.message_entry.set_text(message)
         self.amount_entry.set_text(amount)
         self.payto_sig.set_visible(False)
@@ -786,16 +790,16 @@ class ElectrumWindow:
             to_address = r
 
         if not is_valid(to_address):
-            self.show_message( "invalid VERGE address:\n"+to_address)
+            self.show_message( "invalid bitcoin address:\n"+to_address)
             return
 
         try:
-            amount = int( Decimal(amount_entry.get_text()) * 100000000 )
+            amount = int(Decimal(amount_entry.get_text()) * COIN)
         except Exception:
             self.show_message( "invalid amount")
             return
         try:
-            fee = int( Decimal(fee_entry.get_text()) * 100000000 )
+            fee = int(Decimal(fee_entry.get_text()) * COIN)
         except Exception:
             self.show_message( "invalid fee")
             return
@@ -813,7 +817,7 @@ class ElectrumWindow:
             self.show_message(str(e))
             return
 
-        if fee < tx.required_fee(self.wallet):
+        if tx.requires_fee(self.wallet) and fee < MIN_RELAY_TX_FEE:
             self.show_message( "This transaction requires a higher fee, or it will not be propagated by the network." )
             return
 
@@ -1080,10 +1084,7 @@ class ElectrumWindow:
                 path, col = treeview.get_cursor()
                 if path:
                     address = liststore.get_value( liststore.get_iter(path), 0)
-                    if address in wallet.frozen_addresses:
-                        wallet.unfreeze(address)
-                    else:
-                        wallet.freeze(address)
+                    wallet.set_frozen_state([address], not wallet.is_frozen(address))
                     self.update_receiving_tab()
             button.connect("clicked", freeze_address, treeview, liststore, self.wallet)
             button.show()
@@ -1152,7 +1153,7 @@ class ElectrumWindow:
             if address in self.wallet.imported_keys.keys():
                 Type = "I"
             c, u, x = self.wallet.get_addr_balance(address)
-            if address in self.wallet.frozen_addresses: Type = Type + "F"
+            if self.wallet.is_frozen(address): Type = Type + "F"
             label = self.wallet.labels.get(address)
             h = self.wallet.history.get(address,[])
             n = len(h)

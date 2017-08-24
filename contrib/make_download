@@ -17,7 +17,7 @@ string = string.replace("##VERSION_MAC##", version_mac)
 files = {
     'tgz': "Electrum-XVG-%s.tar.gz" % version,
     'zip': "Electrum-XVG-%s.zip" % version,
-    'mac': "electrum-XVG-%s.dmg" % version_mac,
+    'mac': "electrum-xvg-%s.dmg" % version_mac,
     'win': "electrum-xvg-%s.exe" % version_win,
     'win_setup': "electrum-xvg-%s-setup.exe" % version_win,
     'win_portable': "electrum-xvg-%s-portable.exe" % version_win,
@@ -25,7 +25,7 @@ files = {
 
 for k, n in files.items():
     path = "binaries/%s"%n
-    link = "https://electrum-xvg.space/download/%s"%n
+    link = "https://github.com/vergecurrency/electrum-xvg/releases/download/%s"%n
     if not os.path.exists(path):
         os.system("wget -q %s -O %s" % (link, path))
     if not os.path.getsize(path):
@@ -55,10 +55,9 @@ from versions import android_template, android_page
 with open(android_template) as f:
     string = f.read()
 
-e4a_name = "el4a-%s.zip"%version
-e4a_zipname = e4a_name.replace(".","")
-string = string.replace("##VERSION##",version)
-string = string.replace("##ZIPNAME##",e4a_zipname)
+e4a_zipname = "e4a-%s.zip"%version
+string = string.replace("##VERSION##", version)
+string = string.replace("##ZIPNAME##", e4a_zipname)
 
 with open(android_page,'w') as f:
     f.write(string)

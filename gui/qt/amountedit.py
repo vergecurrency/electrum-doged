@@ -4,6 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from decimal import Decimal
+from electrum.util import format_satoshis_plain
 
 class MyLineEdit(QLineEdit):
     frozen = pyqtSignal()
@@ -44,6 +45,9 @@ class AmountEdit(MyLineEdit):
                 s = s.replace('.','')
                 s = s[:p] + '.' + s[p:p+self.decimal_point()]
         self.setText(s)
+        # setText sets Modified to False.  Instead we want to remember
+        # if updates were because of user modification.
+        self.setModified(self.hasFocus())
         self.setCursorPosition(pos)
 
     def paintEvent(self, event):
@@ -93,8 +97,5 @@ class BTCAmountEdit(AmountEdit):
     def setAmount(self, amount):
         if amount is None:
             self.setText("")
-            return
-
-        p = pow(10, self.decimal_point())
-        x = amount / Decimal(p)
-        self.setText(str(x))
+        else:
+            self.setText(format_satoshis_plain(amount, self.decimal_point()))

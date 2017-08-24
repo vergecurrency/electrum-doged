@@ -16,6 +16,10 @@ else:
     MONOSPACE_FONT = 'monospace'
 
 
+GREEN_BG = "QWidget {background-color:#80ff80;}"
+RED_BG = "QWidget {background-color:#ffcccc;}"
+
+
 class WaitingDialog(QThread):
     def __init__(self, parent, message, run_task, on_success=None, on_complete=None):
         QThread.__init__(self)
@@ -162,6 +166,13 @@ class CopyButton(QPushButton):
     def __init__(self, text_getter, app):
         QPushButton.__init__(self, _("Copy"))
         self.clicked.connect(lambda: app.clipboard().setText(text_getter()))
+
+class CopyCloseButton(QPushButton):
+    def __init__(self, text_getter, app, dialog):
+        QPushButton.__init__(self, _("Copy and Close"))
+        self.clicked.connect(lambda: app.clipboard().setText(text_getter()))
+        self.clicked.connect(dialog.close)
+        self.setDefault(True)
 
 class OkButton(QPushButton):
     def __init__(self, dialog, label=None):

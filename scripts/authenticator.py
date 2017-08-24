@@ -90,7 +90,7 @@ def make_layout(s):
 
         <TextView
           android:id="@+id/textElectrum"
-          android:text="Electrum-XVG Authenticator"
+          android:text="Electrum- XVGAuthenticator"
           android:textSize="7pt"
           android:textColor="#ff4444ff"
           android:gravity="left"
@@ -198,7 +198,7 @@ class Authenticator:
                     exit()
                 if not Wallet.is_seed(seed):
                     exit()
-                wallet = Wallet.from_seed(seed, storage)
+                wallet = Wallet.from_seed(seed, password, storage)
             else:
                 exit()
 

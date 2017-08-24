@@ -24,12 +24,12 @@ import xmlrpclib
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from electrum_xvg import bitcoin, util
-from electrum_xvg import transaction
-from electrum_xvg.plugins import BasePlugin, hook
-from electrum_xvg.i18n import _
+from electrum import bitcoin, util
+from electrum import transaction
+from electrum.plugins import BasePlugin, hook
+from electrum.i18n import _
 
-from electrum_xvg_gui.qt import transaction_dialog
+from electrum_gui.qt.transaction_dialog import show_transaction
 
 import sys
 import traceback
@@ -95,7 +95,7 @@ class Plugin(BasePlugin):
         return self.wallet.wallet_type in ['2of2', '2of3']
 
     @hook
-    def load_wallet(self, wallet):
+    def load_wallet(self, wallet, window):
         self.wallet = wallet
         if not self.is_available():
             return
@@ -115,7 +115,7 @@ class Plugin(BasePlugin):
     def transaction_dialog(self, d):
         self.send_button = b = QPushButton(_("Send to cosigner"))
         b.clicked.connect(lambda: self.do_send(d.tx))
-        d.buttons.insert(2, b)
+        d.buttons.insert(0, b)
         self.transaction_dialog_update(d)
 
     @hook
@@ -131,7 +131,7 @@ class Plugin(BasePlugin):
             self.send_button.hide()
 
     def cosigner_can_sign(self, tx, cosigner_xpub):
-        from electrum_xvg.transaction import x_to_xpub
+        from electrum.transaction import x_to_xpub
         xpub_set = set([])
         for txin in tx.inputs:
             for x_pubkey in txin['x_pubkeys']:
@@ -149,6 +149,7 @@ class Plugin(BasePlugin):
             try:
                 server.put(_hash, message)
             except Exception as e:
+                traceback.print_exc(file=sys.stdout)
                 self.win.show_message(str(e))
                 return
         self.win.show_message("Your transaction was sent to the cosigning pool.\nOpen your cosigner wallet to retrieve it.")
@@ -179,6 +180,4 @@ class Plugin(BasePlugin):
 
         self.listener.clear()
         tx = transaction.Transaction(message)
-        d = transaction_dialog.TxDialog(tx, self.win)
-        d.saved = False
-        d.exec_()
+        show_transaction(tx, self.win, prompt_if_unsaved=True)
