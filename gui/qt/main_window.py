@@ -81,8 +81,8 @@ class StatusBarButton(QPushButton):
             self.func()
 
 
-from electrum.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
-from electrum.paymentrequest import PaymentRequest, InvoiceStore, get_payment_request
+from electrum_xvg.paymentrequest import PR_UNPAID, PR_PAID, PR_UNKNOWN, PR_EXPIRED
+from electrum_xvg.paymentrequest import PaymentRequest, InvoiceStore, get_payment_request
 
 pr_icons = {
     PR_UNPAID:":icons/unpaid.png",

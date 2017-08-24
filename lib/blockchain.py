@@ -127,7 +127,7 @@ class Blockchain():
     def hash_header(self, header):
         return rev_hex(Hash(self.header_to_string(header).decode('hex')).encode('hex'))
 		
-	 def pow_hash_header(self, header):		
+    def pow_hash_header(self, header):		
         return rev_hex(getPoWHash(self.header_to_string(header).decode('hex')).encode('hex'))
 
     def path(self):

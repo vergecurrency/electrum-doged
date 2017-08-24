@@ -461,7 +461,7 @@ def deserialize(raw):
     d = {}
     start = vds.read_cursor
     d['version'] = vds.read_int32()
-	d['nTime'] = vds.read_uint32()
+    d['nTime'] = vds.read_uint32()
     n_vin = vds.read_compact_size()
     d['inputs'] = list(parse_input(vds) for i in xrange(n_vin))
     n_vout = vds.read_compact_size()
@@ -537,7 +537,7 @@ class Transaction:
         self.inputs = inputs
         self.outputs = outputs
         self.locktime = locktime
-		print("from_io")		
+	print("from_io")		
         if nTime == 0:		
             self.time = int(time.time()) # bitspill		
         else:		
@@ -658,10 +658,10 @@ class Transaction:
     def serialize(self, for_sig=None):
         inputs = self.inputs
         outputs = self.outputs
-		time = self.time # bitspill		
+	time = self.time # bitspill		
         print("Serializing transaction: time: %d"%time)
         s  = int_to_hex(1,4)                                         # version
-		s += int_to_hex(time,4)   # bitspill                         # nTime
+	s += int_to_hex(time,4)   # bitspill                         # nTime
         s += var_int( len(inputs) )                                  # number of inputs
         for i, txin in enumerate(inputs):
             s += txin['prevout_hash'].decode('hex')[::-1].encode('hex')   # prev hash
