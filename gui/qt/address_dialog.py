@@ -22,10 +22,10 @@ from electrum_xvg.util import print_error, print_msg
 import os.path, json, ast, traceback
 import shutil
 import StringIO
-
+import importlib
 
 try:
-    import PyQt4
+    importlib.import_module("PyQt4")
 except Exception:
     sys.exit("Error: Could not import PyQt4 on Linux systems, you may try 'sudo apt-get install python-qt4'")
 

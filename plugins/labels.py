@@ -3,9 +3,10 @@ import requests
 import threading
 import hashlib
 import json
+import importlib
 
 try:
-    import PyQt4
+    importlib.import_module("PyQt4")
 except Exception:
     sys.exit("Error: Could not import PyQt4 on Linux systems, you may try 'sudo apt-get install python-qt4'")
 

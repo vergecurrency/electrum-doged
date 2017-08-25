@@ -2,8 +2,8 @@
 
 import sys, os, re
 import traceback, platform
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+import PyQt4.QtCore as QtCore
+import PyQt4.QtGui as QtGui
 from electrum_xvg import util
 
 
