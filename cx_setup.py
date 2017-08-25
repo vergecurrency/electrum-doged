@@ -5,7 +5,7 @@ from cx_Freeze import setup, Executable
 ## create executable using command `python cx_setup.py`
 
 
-buildOptions = dict(packages = ["idna","shutil","ltc_scrypt","argparse","dns","gui"], excludes = [], include_files=["lib"])
+buildOptions = dict(packages = ["idna","shutil","ltc_scrypt","argparse","dns","gui","dbhash","dumbdbm"], excludes = [], include_files=["lib"])
  
 import sys
 base = 'Win32GUI' if sys.platform=='win32' else None
