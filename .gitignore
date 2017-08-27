@@ -16,3 +16,4 @@ locale/
 packages
 env/
 .tox/
+*.egg-info/
