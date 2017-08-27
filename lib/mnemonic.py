@@ -159,7 +159,13 @@ class Mnemonic(object):
             nonce += 1
             i = custom_entropy * (my_entropy + nonce)
             seed = self.mnemonic_encode(i)
-            assert i == self.mnemonic_decode(seed)
+
+            try:
+                assert i == self.mnemonic_decode(seed) 
+            except AssertionError:
+                # If assertion fails, generate new seed
+                continue
+
             if is_old_seed(seed):
                 continue
             if is_new_seed(seed, prefix):
