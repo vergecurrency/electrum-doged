@@ -115,5 +115,9 @@ pyinstaller macosx.spec
 
 sudo hdiutil create -fs HFS+ -volname "Verge Electrum" -srcfolder "dist/VERGE Electrum.app" dist/VERGE-electrum-$VERSION-mac.dmg
 
+Verge Electrum Server List:
+===========================
+electrum-verge.xyz
+electrum-xvg.stream
 
 [![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=xvg|?&theme=cli#VERGE)
