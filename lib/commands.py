@@ -354,7 +354,7 @@ class Commands:
         self.nocheck = nocheck
         dest = self._resolver(destination)
         if tx_fee is None:
-            tx_fee = 0.0001
+            tx_fee = 0.01
         fee = int(Decimal(tx_fee)*COIN)
         return Transaction.sweep([privkey], self.network, dest, fee)
 
