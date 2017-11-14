@@ -7,8 +7,6 @@ import urlparse
 import urllib
 import threading
 
-sys.stdout = sys.stderr = open('log.txt', 'w')
-
 def normalize_version(v):
     return [int(x) for x in re.sub(r'(\.0+)*$','', v).split(".")]
 
@@ -468,3 +466,6 @@ class StoreDict(dict):
         if key in self.keys():
             dict.pop(self, key)
             self.save()
+
+
+sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
