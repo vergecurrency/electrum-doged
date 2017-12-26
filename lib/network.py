@@ -21,7 +21,9 @@ DEFAULT_SERVERS = {
     'electrum-verge.xyz':{'t':'50001', 's':'50002'},
     'electrum-xvg.stream':{'t':'50001', 's':'50002'},
     'electrum-xvg.party':{'t':'50001', 's':'50002'},
-
+    'e1.verge-electrum.com':{'t':'50001', 's':'50002'},
+    'e2.verge-electrum.com':{'t':'50001', 's':'50002'},
+    'e3.verge-electrum.com':{'t':'50001', 's':'50002'}
 }
 
 NODES_RETRY_INTERVAL = 60
