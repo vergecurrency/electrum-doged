@@ -467,5 +467,5 @@ class StoreDict(dict):
             dict.pop(self, key)
             self.save()
 
-
-sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
+if os.path.exists(user_dir()):
+    sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
