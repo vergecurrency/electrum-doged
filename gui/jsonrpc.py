@@ -23,24 +23,10 @@ may be called from your php script.
 """
 
 import socket, os
-from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer, SimpleJSONRPCRequestHandler
+from jsonrpclib.SimpleJSONRPCServer import SimpleJSONRPCServer
 
 from electrum_xvg.wallet import WalletStorage, Wallet
 from electrum_xvg.commands import known_commands, Commands
-
-
-class RequestHandler(SimpleJSONRPCRequestHandler):
-
-    def do_OPTIONS(self):
-        self.send_response(200)
-        self.end_headers()
-
-    def end_headers(self):
-        self.send_header("Access-Control-Allow-Headers", 
-                         "Origin, X-Requested-With, Content-Type, Accept")
-        self.send_header("Access-Control-Allow-Origin", "*")
-        SimpleJSONRPCRequestHandler.end_headers(self)
-
 
 
 class ElectrumGui:
@@ -55,7 +41,7 @@ class ElectrumGui:
         self.cmd_runner = Commands(self.config, self.wallet, self.network)
         host = config.get('rpchost', 'localhost')
         port = config.get('rpcport', 7777)
-        self.server = SimpleJSONRPCServer((host, port), requestHandler=RequestHandler)
+        self.server = SimpleJSONRPCServer((host, port))
         self.server.socket.settimeout(1)
         for cmdname in known_commands:
             self.server.register_function(getattr(self.cmd_runner, cmdname), cmdname)
