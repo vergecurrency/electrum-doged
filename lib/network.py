@@ -15,6 +15,7 @@ import interface
 from blockchain import Blockchain
 from collections import deque
 
+# tcp, tcp/tls, http, https
 DEFAULT_PORTS = {'t':'50001', 's':'50002', 'h':'8081', 'g':'8082'}
 
 DEFAULT_SERVERS = {
