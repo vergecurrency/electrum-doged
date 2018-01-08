@@ -15,7 +15,7 @@ os.system(cmd)
 
 os.chdir('lib')
 
-crowdin_identifier = 'electrum-xvg'
+crowdin_identifier = 'electrum-zcl'
 crowdin_file_name = 'electrum-client/messages.pot'
 locale_file_name = 'locale/messages.pot'
 

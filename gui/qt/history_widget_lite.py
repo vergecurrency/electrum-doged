@@ -1,5 +1,5 @@
 from PyQt4.QtGui import *
-from electrum_xvg.i18n import _
+from electrum_zcl.i18n import _
 
 class HistoryWidget(QTreeWidget):
 

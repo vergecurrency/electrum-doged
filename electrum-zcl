@@ -69,19 +69,19 @@ except Exception:
     sys.exit("cannot import ecdsa.curve_secp256k1. You probably need to upgrade ecdsa.\nTry: sudo pip install --upgrade ecdsa")
 
 
-# load local module as electrum-xvg
+# load local module as electrum-zcl
 if is_bundle or is_local or is_android:
     import imp
-    imp.load_module('electrum_xvg', *imp.find_module('lib'))
-    imp.load_module('electrum_xvg_gui', *imp.find_module('gui'))
+    imp.load_module('electrum_zcl', *imp.find_module('lib'))
+    imp.load_module('electrum_zcl_gui', *imp.find_module('gui'))
 
 
-from electrum_xvg import util
-from electrum_xvg import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy
-from electrum_xvg.util import print_msg, print_error, print_stderr, print_json, set_verbosity, InvalidPassword
-from electrum_xvg.daemon import get_daemon
-from electrum_xvg.plugins import init_plugins, run_hook, always_hook
-from electrum_xvg.commands import get_parser, known_commands, Commands, config_variables
+from electrum_zcl import util
+from electrum_zcl import SimpleConfig, Network, Wallet, WalletStorage, NetworkProxy
+from electrum_zcl.util import print_msg, print_error, print_stderr, print_json, set_verbosity, InvalidPassword
+from electrum_zcl.daemon import get_daemon
+from electrum_zcl.plugins import init_plugins, run_hook, always_hook
+from electrum_zcl.commands import get_parser, known_commands, Commands, config_variables
 
 
 # get password routine
@@ -106,9 +106,9 @@ def run_gui(config):
     if url:
         if os.path.exists(url):
             # assume this is a payment request
-            url = "verge:?r=file://"+ os.path.join(os.getcwd(), url)
+            url = "zclassic:?r=file://"+ os.path.join(os.getcwd(), url)
 
-        if not re.match('^verge:', url):
+        if not re.match('^zclassic:', url):
             print_stderr('unknown command:', url)
             sys.exit(1)
 
@@ -117,7 +117,7 @@ def run_gui(config):
         gui_name = 'qt'
 
     try:
-        gui = __import__('electrum_xvg_gui.' + gui_name, fromlist=['electrum_xvg_gui'])
+        gui = __import__('electrum_zcl_gui.' + gui_name, fromlist=['electrum_zcl_gui'])
     except ImportError:
         traceback.print_exc(file=sys.stdout)
         sys.exit()
@@ -146,7 +146,7 @@ def run_gui(config):
 def run_daemon(config):
     cmd = config.get('subcommand')
     if cmd not in ['start', 'stop', 'status']:
-        print_msg("syntax: electrum-xvg daemon <start|status|stop>")
+        print_msg("syntax: electrum-zcl daemon <start|status|stop>")
         sys.exit(1)
     s = get_daemon(config, False)
     if cmd == 'start':
@@ -269,7 +269,7 @@ def run_cmdline(config):
 
     if cmd.name not in ['create', 'restore'] and cmd.requires_wallet and not storage.file_exists:
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum-xvg create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'electrum-zcl create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
     # create wallet instance
@@ -306,7 +306,7 @@ def run_cmdline(config):
     if cmd.requires_network and not config.get('offline'):
         s = get_daemon(config, False)
         if not s:
-            print_msg("Network daemon is not running. Try 'electrum-xvg daemon start'\nIf you want to run this command offline, use the -o flag.")
+            print_msg("Network daemon is not running. Try 'electrum-zcl daemon start'\nIf you want to run this command offline, use the -o flag.")
             sys.exit(1)
         network = NetworkProxy(s, config)
         network.start()
@@ -398,7 +398,7 @@ if __name__ == '__main__':
             config_options['auto_connect'] = False
 
     if config_options.get('portable'):
-        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-xvg_data')
+        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-zcl_data')
 
     # If private key is passed on the command line, '?' triggers prompt.
     if config_options.get('privkey') and config_options['privkey'] == '?':

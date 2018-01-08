@@ -35,7 +35,7 @@ class Contacts(StoreDict):
                 'type': 'openalias',
                 'validated': validated
             }
-        raise Exception("Invalid Verge address or alias", k)
+        raise Exception("Invalid Zclassic address or alias", k)
 
     def resolve_openalias(self, url):
         # support email-style addresses, per the OA standard

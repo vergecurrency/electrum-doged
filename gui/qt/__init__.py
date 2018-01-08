@@ -35,11 +35,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import PyQt4.QtCore as QtCore
 
-from electrum_xvg.i18n import _, set_language
-from electrum_xvg.util import print_error, print_msg
-from electrum_xvg.plugins import run_hook, always_hook
-from electrum_xvg import WalletStorage, Wallet
-from electrum_xvg.bitcoin import MIN_RELAY_TX_FEE
+from electrum_zcl.i18n import _, set_language
+from electrum_zcl.util import print_error, print_msg
+from electrum_zcl.plugins import run_hook, always_hook
+from electrum_zcl import WalletStorage, Wallet
+from electrum_zcl.bitcoin import MIN_RELAY_TX_FEE
 
 try:
     import icons_rc
@@ -80,7 +80,7 @@ class ElectrumGui:
         m.addAction(_("Show/Hide"), self.show_or_hide)
         m.addAction(_("Dark/Light"), self.toggle_tray_icon)
         m.addSeparator()
-        m.addAction(_("Exit Electrum-XVG"), self.close)
+        m.addAction(_("Exit Electrum-ZCL"), self.close)
         self.tray.setContextMenu(m)
 
     def toggle_tray_icon(self):
@@ -202,7 +202,7 @@ class ElectrumGui:
         self.dark_icon = self.config.get("dark_icon", False)
         icon = QIcon(":icons/electrum_dark_icon.png") if self.dark_icon else QIcon(':icons/electrum_light_icon.png')
         self.tray = QSystemTrayIcon(icon, None)
-        self.tray.setToolTip('Electrum-XVG')
+        self.tray.setToolTip('Electrum-ZCL')
         self.tray.activated.connect(self.tray_activated)
         self.build_tray_menu()
         self.tray.show()

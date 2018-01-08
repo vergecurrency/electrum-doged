@@ -4,7 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from decimal import Decimal
-from electrum_xvg.util import format_satoshis_plain
+from electrum_zcl.util import format_satoshis_plain
 
 class MyLineEdit(QLineEdit):
     frozen = pyqtSignal()
@@ -79,9 +79,9 @@ class BTCAmountEdit(AmountEdit):
         p = self.decimal_point()
         assert p in [0, 3, 6]
         if p == 6:
-            return 'XVG'
+            return 'ZCL'
         if p == 3:
-            return 'mXVG'
+            return 'mZCL'
         if p == 0:
             return 'bits'
         raise Exception('Unknown base unit')

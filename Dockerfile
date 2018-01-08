@@ -14,9 +14,9 @@ RUN apt-get update && apt-get install -y \
 	&& pip install pyasn1 pyasn1-modules pbkdf2 tlslite qrcode \
 	&& groupadd -g 1000 user && useradd -m -u 1000 -g user user \
 	&& cd /home/user \
-	&& git clone https://github.com/vergecurrency/electrum-xvg.git && cd electrum-xvg \
+	&& git clone https://github.com/BTCP-community/electrum-zcl.git && cd electrum-zcl \
 	&& pyrcc4 icons.qrc -o gui/qt/icons_rc.py \
-	&& chmod +x electrum-xvg \
+	&& chmod +x electrum-zcl \
 	&& python setup.py install \
 	&& chown -R user:user /home/user \
 	&& rm -rf /var/lib/apt/lists/* \
@@ -24,4 +24,4 @@ RUN apt-get update && apt-get install -y \
 
 USER user
 
-ENTRYPOINT [ "/usr/local/bin/electrum-xvg" ]
+ENTRYPOINT [ "/usr/local/bin/electrum-zcl" ]

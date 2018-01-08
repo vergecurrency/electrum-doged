@@ -20,13 +20,13 @@ data_files = []
 if platform.system() in [ 'Linux', 'FreeBSD', 'DragonFly']:
     usr_share = os.path.join(sys.prefix, "share")
     data_files += [
-        (os.path.join(usr_share, 'applications/'), ['electrum-xvg.desktop']),
-        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-xvg.png'])
+        (os.path.join(usr_share, 'applications/'), ['electrum-zcl.desktop']),
+        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-zcl.png'])
     ]
 
 
 setup(
-    name="Electrum-XVG",
+    name="Electrum-ZCL",
     version=version.ELECTRUM_VERSION,
     install_requires=[
         'slowaes>=0.1a1',
@@ -34,24 +34,24 @@ setup(
         'pbkdf2',
         'requests',
         'qrcode',
-		'ltc_scrypt',
+	'ltc_scrypt',
         'protobuf',
         'tlslite',
         'dnspython',
     ],
     package_dir={
-        'electrum_xvg': 'lib',
-        'electrum_xvg_gui': 'gui',
-        'electrum_xvg_plugins': 'plugins',
+        'electrum_zcl': 'lib',
+        'electrum_zcl_gui': 'gui',
+        'electrum_zcl_plugins': 'plugins',
     },
-    packages=['electrum_xvg','electrum_xvg_gui','electrum_xvg_gui.qt','electrum_xvg_plugins'],
+    packages=['electrum_zcl','electrum_zcl_gui','electrum_zcl_gui.qt','electrum_zcl_plugins'],
     package_data={
-        'electrum_xvg': [
+        'electrum_zcl': [
             'www/index.html',
             'wordlist/*.txt',
             'locale/*/LC_MESSAGES/electrum.mo',
         ],
-        'electrum_xvg_gui': [
+        'electrum_zcl_gui': [
             "qt/themes/cleanlook/name.cfg",
             "qt/themes/cleanlook/style.css",
             "qt/themes/sahara/name.cfg",
@@ -60,12 +60,12 @@ setup(
             "qt/themes/dark/style.css",
         ]
     },
-    scripts=['electrum-xvg'],
+    scripts=['electrum-zcl'],
     data_files=data_files,
-    description="Lightweight Verge Wallet",
+    description="Lightweight Zclassic Wallet",
     author="sunerok",
-    author_email="twitter.com/vergecurrency",
+    author_email="twitter.com/zclassiccoin",
     license="GNU GPLv3",
-    url="https://vergecurrency.com",
-    long_description="""Lightweight Verge Wallet"""
+    url="https://zclassic.org",
+    long_description="""Lightweight Zclassic Wallet"""
 )

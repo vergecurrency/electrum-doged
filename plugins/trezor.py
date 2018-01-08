@@ -8,17 +8,17 @@ from base64 import b64encode, b64decode
 import unicodedata
 import threading
 
-import electrum_xvg as electrum
-from electrum_xvg.account import BIP32_Account
-from electrum_xvg.bitcoin import EncodeBase58Check, public_key_to_bc_address, bc_address_to_hash_160
-from electrum_xvg.i18n import _
-from electrum_xvg.plugins import BasePlugin, hook, always_hook, run_hook
-from electrum_xvg.transaction import deserialize
-from electrum_xvg.wallet import BIP32_HD_Wallet
-from electrum_xvg.util import print_error
-from electrum_xvg.wallet import pw_decode, bip32_private_derivation, bip32_root
+import electrum_zcl as electrum
+from electrum_zcl.account import BIP32_Account
+from electrum_zcl.bitcoin import EncodeBase58Check, public_key_to_bc_address, bc_address_to_hash_160
+from electrum_zcl.i18n import _
+from electrum_zcl.plugins import BasePlugin, hook, always_hook, run_hook
+from electrum_zcl.transaction import deserialize
+from electrum_zcl.wallet import BIP32_HD_Wallet
+from electrum_zcl.util import print_error
+from electrum_zcl.wallet import pw_decode, bip32_private_derivation, bip32_root
 
-from electrum_xvg_gui.qt.util import *
+from electrum_zcl_gui.qt.util import *
 
 try:
     from trezorlib.client import types
@@ -301,7 +301,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         except Exception, e:
             give_error(e)
         try:
-            self.get_client().get_address('Verge', address_n, True)
+            self.get_client().get_address('Zclassic', address_n, True)
         except Exception, e:
             give_error(e)
         finally:
@@ -316,7 +316,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         except Exception, e:
             give_error(e)
         try:
-            msg_sig = self.get_client().sign_message('Verge', address_n, message)
+            msg_sig = self.get_client().sign_message('Zclassic', address_n, message)
         except Exception, e:
             give_error(e)
         finally:
@@ -333,7 +333,7 @@ class TrezorWallet(BIP32_HD_Wallet):
         inputs = self.tx_inputs(tx)
         outputs = self.tx_outputs(tx)
         try:
-            signed_tx = self.get_client().sign_tx('Verge', inputs, outputs)[1]
+            signed_tx = self.get_client().sign_tx('Zclassic', inputs, outputs)[1]
         except Exception, e:
             give_error(e)
         finally:
@@ -534,7 +534,7 @@ class TrezorQtHandler:
         self.done.set()
 
     def passphrase_dialog(self):
-        from electrum_xvg_gui.qt.password_dialog import make_password_dialog, run_password_dialog
+        from electrum_zcl_gui.qt.password_dialog import make_password_dialog, run_password_dialog
         d = QDialog()
         d.setModal(1)
         d.setLayout(make_password_dialog(d, None, self.message, False))

@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-from electrum_xvg.i18n import _
+from electrum_zcl.i18n import _
 
 descriptions = [
     {

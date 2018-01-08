@@ -22,7 +22,7 @@ from qrtextedit import ScanQRTextEdit
 
 import re
 from decimal import Decimal
-from electrum_xvg import bitcoin
+from electrum_zcl import bitcoin
 
 import util
 
@@ -110,7 +110,7 @@ class PayToEdit(ScanQRTextEdit):
 
         if len(lines) == 1:
             data = lines[0]
-            if data.startswith("verge:"):
+            if data.startswith("zclassic:"):
                 self.scan_f(data)
                 return
             try:
@@ -167,7 +167,7 @@ class PayToEdit(ScanQRTextEdit):
         return len(self.lines()) > 1
 
     def paytomany(self):
-        from electrum_xvg.i18n import _
+        from electrum_zcl.i18n import _
         self.setText("\n\n\n")
         self.update_size()
         msg = '\n'.join([
@@ -253,7 +253,7 @@ class PayToEdit(ScanQRTextEdit):
 
     def qr_input(self):
         data = super(PayToEdit,self).qr_input()
-        if data.startswith("verge:"):
+        if data.startswith("zclassic:"):
             self.scan_f(data)
             # TODO: update fee
 
