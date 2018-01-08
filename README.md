@@ -39,6 +39,8 @@ To run Electrum from this directory, just do:
 ---------------------------------------------
   ./electrum-zcl
 
+  (You may need to `mkdir ~/.electrum-zcl/ && touch ~/.electrum-zcl/log.txt`)
+
 To start Electrum from your web browser, see
 --------------------------------------------
 http://electrum-verge.xyz/Verge_URIs.html
