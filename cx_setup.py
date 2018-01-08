@@ -12,21 +12,21 @@ is_android = 'ANDROID_DATA' in os.environ
 
 if is_bundle or is_local or is_android:
     import imp
-    imp.load_module('electrum_xvg', *imp.find_module('lib'))
+    imp.load_module('electrum_zcl', *imp.find_module('lib'))
 
-from electrum_xvg.version import ELECTRUM_VERSION
+from electrum_zcl.version import ELECTRUM_VERSION
 buildOptions = dict(packages = ["idna","shutil","ltc_scrypt","argparse","dns","gui","dbhash","dumbdbm"], excludes = [], include_files=["lib"])
  
 base = 'Win32GUI' if sys.platform=='win32' else None
  
 executables = [
-    Executable('electrum-xvg', base=base, icon = "./icons/electrum.ico")
+    Executable('electrum-zcl', base=base, icon = "./icons/electrum.ico")
 ]
  
 setup(
-    name='Electrum XVG',
+    name='Electrum ZCL',
     version=ELECTRUM_VERSION,
-    description = 'Electrum Wallet for Verge (XVG)',
+    description = 'Electrum Wallet for Zclassic (ZCL)',
     options = dict(build_exe = buildOptions),
     executables = executables,    
 )

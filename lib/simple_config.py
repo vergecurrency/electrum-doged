@@ -6,7 +6,7 @@ import os
 from copy import deepcopy
 from util import user_dir, print_error, print_msg, print_stderr
 
-SYSTEM_CONFIG_PATH = "/etc/electrum-xvg.conf"
+SYSTEM_CONFIG_PATH = "/etc/electrum-zcl.conf"
 
 config = None
 
@@ -156,7 +156,7 @@ class SimpleConfig(object):
         new_path = os.path.join(self.path, "wallets", "default_wallet")
 
         # default path in pre 1.9 versions
-        old_path = os.path.join(self.path, "electrum-xvg.dat")
+        old_path = os.path.join(self.path, "electrum-zcl.dat")
         if os.path.exists(old_path) and not os.path.exists(new_path):
             os.rename(old_path, new_path)
 
@@ -165,13 +165,13 @@ class SimpleConfig(object):
 
 
 def read_system_config(path=SYSTEM_CONFIG_PATH):
-    """Parse and return the system config settings in /etc/electrum-xvg.conf."""
+    """Parse and return the system config settings in /etc/electrum-zcl.conf."""
     result = {}
     if os.path.exists(path):
         try:
             import ConfigParser
         except ImportError:
-            print "cannot parse electrum-xvg.conf. please install ConfigParser"
+            print "cannot parse electrum-zcl.conf. please install ConfigParser"
             return
 
         p = ConfigParser.ConfigParser()
@@ -185,7 +185,7 @@ def read_system_config(path=SYSTEM_CONFIG_PATH):
     return result
 
 def read_user_config(path):
-    """Parse and store the user config settings in electrum-xvg.conf into user_config[]."""
+    """Parse and store the user config settings in electrum-zcl.conf into user_config[]."""
     if not path:
         return {}
     config_path = os.path.join(path, "config")

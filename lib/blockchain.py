@@ -34,7 +34,7 @@ class Blockchain():
     def __init__(self, config, network):
         self.config = config
         self.network = network
-        self.headers_url = 'http://electrum-verge.xyz/blockchain_headers'
+        self.headers_url = 'http://electrum-zclassic.xyz/blockchain_headers'
         self.local_height = 0
         self.set_local_height()
 

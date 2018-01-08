@@ -1,32 +1,36 @@
-Electrum-XVG - lightweight Verge client
+Electrum-ZCL - lightweight Zclassic client
 ------------------------------------------------
-![Electrum-XVG](https://raw.githubusercontent.com/vergecurrency/electrum-xvg/master/electrumlogo.png)
+## Based on Electrum-XVG
+
+![Electrum-ZCL](https://raw.githubusercontent.com/vergecurrency/electrum-xvg/master/electrumlogo.png)
 
 [![Build Status](https://travis-ci.org/vergecurrency/electrum-xvg.svg?branch=master)](https://travis-ci.org/vergecurrency/electrum-xvg)
 
 Licence: GNU GPL v3
 
-Authors: sunerok, bitspill & whit3water
+Authors: The Zclassic Team, sunerok, bitspill & whit3water
 
 Language: Python
+Platform: Linux, Windows, MacOS
 
-Homepage: http://electrum-verge.xyz/
+Homepage: http://zclassic.org/
+Special thanks to: http://electrum-verge.xyz/
 
-To get started, download the release, unzip, and click electrum-xvg.exe
+To get started, download the release, unzip, and click electrum-zcl.exe
 
-don't forget to copy your randomly generated seedphrase, this will act as your private key.
+!! Don't forget to copy your randomly generated seedphrase, this will act as your private key !!
 
-they are not stored on our servers, so please don't lose them!
+They are not stored on our servers, so please don't lose them!
 
 
 
-1.a) GETTING STARTED WITH UBUNTU/LINUX
+GETTING STARTED - UBUNTU/LINUX
 ------------------
 sudo apt-get install git pyqt4-dev-tools python-pip python-dev python-slowaes
 
 sudo pip install pyasn1 pyasn1-modules pbkdf2 tlslite qrcode
 
-git clone https://github.com/vergecurrency/electrum-xvg && cd electrum-xvg
+git clone https://github.com/BTCP-community/electrum-zcl && cd electrum-zcl
 
 pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
@@ -34,25 +38,31 @@ sudo python setup.py install
 
 To run Electrum from this directory, just do:
 ---------------------------------------------
-  ./electrum-xvg
+  ./electrum-zcl
+
+You may need to also
+---------------------
+
+  `mkdir ~/.electrum-zcl/ && touch ~/.electrum-zcl/log.txt`
 
 To start Electrum from your web browser, see
 --------------------------------------------
 http://electrum-verge.xyz/Verge_URIs.html
+(Doesn't seem to work...)
 
-To update your copy of the electrum client:
+To update your copy of the Electrum client:
 -------------------------------------------
-cd electrum-verge
+cd electrum-zclassic
 
 git pull
 
 sudo python setup.py install
 
-1.b) GETTING STARTED WITH WINDOWS
+GETTING STARTED - WINDOWS
 ------------------
 
 -download this repo as a zip and extract it to where you would like it to run from. 
-https://github.com/vergecurrency/electrum-xvg/archive/master.zip
+https://github.com/BTCP-community/electrum-zcl/archive/master.zip
 
 -download python 2.7 for windows here: https://www.python.org/ftp/python/2.7.10/python-2.7.10.msi
 
@@ -60,7 +70,7 @@ https://github.com/vergecurrency/electrum-xvg/archive/master.zip
 
 -download python qt4: http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.11.3/PyQt4-4.11.3-gpl-Py2.7-Qt4.8.6-x64.exe
 
--then in ms visual studio command prompt, go into the directory electrum-xvg:
+-then in ms visual studio command prompt, go into the directory electrum-zcl:
 
 pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
@@ -68,11 +78,17 @@ py -m pip install pip pyasn1 pyasn1-modules pbkdf2 tlslite qrcode ecdsa ltc_scry
 
 py setup.py install
 
-py electrum-xvg
+py electrum-zcl
 
 
+Zclassic Electrum Server List:
+===========================
+electrum-zclassic.xyz
 
-2. HOW OFFICIAL PACKAGES ARE CREATED
+zclassic-ethereum.xyz
+
+
+HOW OFFICIAL PACKAGES ARE CREATED
 ------------------------------------
 
 python mki18n.py
@@ -91,7 +107,7 @@ On Mac OS X:
   
   ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includes sip
 
-  sudo hdiutil create -fs HFS+ -volname "Electrum-XVG" -srcfolder dist/Electrum-XVG.app dist/electrum-xvg-VERSION-macosx.dmg
+  sudo hdiutil create -fs HFS+ -volname "Electrum-ZCL" -srcfolder dist/Electrum-ZCL.app dist/electrum-zcl-VERSION-macosx.dmg
   
   alternate official build method:
   
@@ -105,7 +121,7 @@ export VERSION=2.0.0
 
 pyinstaller windows.spec
 
-zip -r dist/verge-electrum-$VERSION-win.zip dist/verge-electrum.exe
+zip -r dist/zclassic-electrum-$VERSION-win.zip dist/zclassic-electrum.exe
 
 On Mac OS X:
 
@@ -113,12 +129,7 @@ export VERSION=2.0.0
 
 pyinstaller macosx.spec
 
-sudo hdiutil create -fs HFS+ -volname "Verge Electrum" -srcfolder "dist/VERGE Electrum.app" dist/VERGE-electrum-$VERSION-mac.dmg
+sudo hdiutil create -fs HFS+ -volname "Zclassic Electrum" -srcfolder "dist/ZCLASSIC Electrum.app" dist/ZCLASSIC-electrum-$VERSION-mac.dmg
 
-Verge Electrum Server List:
-===========================
-electrum-verge.xyz
 
-electrum-xvg.stream
-
-[![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=xvg|?&theme=cli#VERGE)
+[![Visit Verge's IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=zcl|?&theme=cli#VERGE)

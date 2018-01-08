@@ -210,6 +210,33 @@ def public_key_to_bc_address(public_key):
     h160 = hash_160(public_key)
     return hash_160_to_bc_address(h160)
 
+'''
+# 'addrtype' related values:
+
+# (From chainparams.cpp)
+// guarantees the first 2 characters, when base58 encoded, are "t1"
+base58Prefixes[PUBKEY_ADDRESS]     = {0x1C,0xB8};
+// guarantees the first 2 characters, when base58 encoded, are "t3"
+base58Prefixes[SCRIPT_ADDRESS]     = {0x1C,0xBD};
+// the first character, when base58 encoded, is "5" or "K" or "L" (as in Bitcoin)
+base58Prefixes[SECRET_KEY]         = {0x80};
+// do not rely on these BIP32 prefixes; they are not specified and may change
+base58Prefixes[EXT_PUBLIC_KEY]     = {0x04,0x88,0xB2,0x1E};
+base58Prefixes[EXT_SECRET_KEY]     = {0x04,0x88,0xAD,0xE4};
+// guarantees the first 2 characters, when base58 encoded, are "zc"
+base58Prefixes[ZCPAYMENT_ADDRRESS] = {0x16,0x9A};
+// guarantees the first 2 characters, when base58 encoded, are "SK"
+base58Prefixes[ZCSPENDING_KEY]     = {0xAB,0x36};
+...
+
+# (From ltc-electrum lib/bitcoin.py)
+ADDRTYPE_P2PKH = #1CB8 (hex)
+ADDRTYPE_P2SH = #1CBD (hex)
+#ADDRTYPE_P2SH_ALT = 63 (?)
+#ADDRTYPE_P2WPKH = 128 (?)
+#ADDRTYPE_SECRET = 128 (?)
+'''
+
 def hash_160_to_bc_address(h160, addrtype = 30):
     vh160 = chr(addrtype) + h160
     h = Hash(vh160)
@@ -381,7 +408,7 @@ from ecdsa.util import string_to_number, number_to_string
 def msg_magic(message):
     varint = var_int(len(message))
     encoded_varint = "".join([chr(int(varint[i:i+2], 16)) for i in xrange(0, len(varint), 2)])
-    return "\x18Verge Signed Message:\n" + encoded_varint + message
+    return "\x18Zclassic Signed Message:\n" + encoded_varint + message
 
 
 def verify_message(address, signature, message):
@@ -642,6 +669,7 @@ def _CKD_pub(cK, c, s):
 BITCOIN_HEADER_PRIV = "0488ade4"
 BITCOIN_HEADER_PUB = "0488b21e"
 
+#TODO Review Testnet
 TESTNET_HEADER_PRIV = "04358394"
 TESTNET_HEADER_PUB = "043587cf"
 

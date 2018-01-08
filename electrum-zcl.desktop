@@ -1,0 +1,17 @@
+# If you want electrum to appear in a linux app launcher ("start menu"), install this by doing:
+# sudo desktop-file-install electrum-zcl.desktop
+
+[Desktop Entry]
+Comment=Lightweight Zclassic Client
+Exec=electrum-zcl %u
+GenericName[en_US]=Electrum-ZCL
+GenericName=Electrum-ZCL
+Icon=electrum-zcl
+Name[en_US]=Electrum Zclassic Wallet
+Name=Electrum Zclassic Wallet
+Categories=Network;
+StartupNotify=false
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/ZCLASSIC;
+

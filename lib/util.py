@@ -100,13 +100,13 @@ def profiler(func):
 
 def user_dir():
     if "HOME" in os.environ:
-        return os.path.join(os.environ["HOME"], ".electrum-xvg")
+        return os.path.join(os.environ["HOME"], ".electrum-zcl")
     elif "APPDATA" in os.environ:
-        return os.path.join(os.environ["APPDATA"], "Electrum-XVG")
+        return os.path.join(os.environ["APPDATA"], "Electrum-ZCL")
     elif "LOCALAPPDATA" in os.environ:
-        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-XVG")
+        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-ZCL")
     elif 'ANDROID_DATA' in os.environ:
-        return "/sdcard/electrum-xvg/"
+        return "/sdcard/electrum-zcl/"
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -202,12 +202,12 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 block_explorer_info = {
-    'Verge-Blockchain.info': ('http://verge-blockchain.info/',
+    'ZclassicExplorer.com': ('http://zclassicexplorer.com/',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
 def block_explorer(config):
-    return config.get('block_explorer', 'Verge-Blockchain.info')
+    return config.get('block_explorer', 'ZclassicExplorer.com')
 
 def block_explorer_tuple(config):
     return block_explorer_info.get(block_explorer(config))
@@ -235,7 +235,7 @@ def parse_URI(uri):
         return {'address': uri}
 
     u = urlparse.urlparse(uri)
-    assert u.scheme == 'verge'
+    assert u.scheme == 'zclassic'
 
     address = u.path
 
@@ -287,7 +287,7 @@ def create_URI(addr, amount, message):
         if type(message) == unicode:
             message = message.encode('utf8')
         query.append('message=%s'%urllib.quote(message))
-    p = urlparse.ParseResult(scheme='verge', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urlparse.ParseResult(scheme='zclassic', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return urlparse.urlunparse(p)
 
 

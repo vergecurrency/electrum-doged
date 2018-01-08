@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from electrum_xvg import SimpleConfig, set_verbosity
-from electrum_xvg.network import filter_protocol
+from electrum_zcl import SimpleConfig, set_verbosity
+from electrum_zcl.network import filter_protocol
 import time, Queue
 from collections import defaultdict
 

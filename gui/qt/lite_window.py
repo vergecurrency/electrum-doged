@@ -13,23 +13,23 @@ except ImportError:
     sys.exit(0)
 
 from decimal import Decimal as D
-from electrum_xvg.bitcoin import is_valid
-from electrum_xvg.i18n import _
+from electrum_zcl.bitcoin import is_valid
+from electrum_zcl.i18n import _
 import decimal
 import json
 import os.path
 import random
 import re
 import time
-from electrum_xvg.wallet import Wallet, WalletStorage
+from electrum_zcl.wallet import Wallet, WalletStorage
 import webbrowser
 import history_widget_lite
 import receiving_widget
-from electrum_xvg import util
+from electrum_zcl import util
 import datetime
 
-from electrum_xvg.version import ELECTRUM_VERSION as electrum_version
-from electrum_xvg.util import format_satoshis, age
+from electrum_zcl.version import ELECTRUM_VERSION as electrum_version
+from electrum_zcl.util import format_satoshis, age
 
 from main_window import ElectrumWindow
 import shutil
@@ -140,7 +140,7 @@ class MiniWindow(QDialog):
 
         # Bitcoin address code
         self.address_input = QLineEdit()
-        self.address_input.setPlaceholderText(_("Enter a Verge address or contact"))
+        self.address_input.setPlaceholderText(_("Enter a Zclassic address or contact"))
         self.address_input.setObjectName("address_input")
 
         self.address_input.setFocusPolicy(Qt.ClickFocus)
@@ -251,8 +251,8 @@ class MiniWindow(QDialog):
         show_hist = self.config.get("gui_show_receiving",False)
         self.toggle_receiving_layout(show_hist)
 
-        self.setWindowIcon(QIcon(":icons/electrum-xvg.png"))
-        self.setWindowTitle("Electrum-XVG")
+        self.setWindowIcon(QIcon(":icons/electrum-zcl.png"))
+        self.setWindowTitle("Electrum-ZCL")
         self.setWindowFlags(Qt.Window|Qt.MSWindowsFixedSizeDialogHint)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
         self.setObjectName("main_window")
@@ -389,7 +389,7 @@ class MiniWindow(QDialog):
     def create_quote_text(self, btc_balance):
         """Return a string copy of the amount fiat currency the
         user has in bitcoins."""
-        from electrum_xvg.plugins import run_hook
+        from electrum_zcl.plugins import run_hook
         r = {}
         run_hook('get_fiat_balance_text', btc_balance, r)
         return r.get(0,'')
@@ -460,7 +460,7 @@ class MiniWindow(QDialog):
 
 
     def the_website(self):
-        webbrowser.open("https://VergeCurrency.com")
+        webbrowser.open("https://zclassic.org")
 
 
     def toggle_receiving_layout(self, toggle_state):
@@ -576,7 +576,7 @@ class ReceivePopup(QDialog):
         self.close()
 
     def setup(self, address):
-        label = QLabel(_("Copied your Verge address to the clipboard!"))
+        label = QLabel(_("Copied your Zclassic address to the clipboard!"))
         address_display = QLineEdit(address)
         address_display.setReadOnly(True)
         resize_line_edit_width(address_display, address)
@@ -586,7 +586,7 @@ class ReceivePopup(QDialog):
         main_layout.addWidget(address_display)
 
         self.setMouseTracking(True)
-        self.setWindowTitle("Electrum - " + _("Receive Verge payment"))
+        self.setWindowTitle("Electrum - " + _("Receive Zclassic payment"))
         self.setWindowFlags(Qt.Window|Qt.FramelessWindowHint|
                             Qt.MSWindowsFixedSizeDialogHint)
         self.layout().setSizeConstraint(QLayout.SetFixedSize)
@@ -677,7 +677,7 @@ class MiniActuator:
         s.start()
         w = QDialog()
         w.resize(200, 70)
-        w.setWindowTitle('Electrum-XVG')
+        w.setWindowTitle('Electrum-ZCL')
         l = QLabel(_('Sending transaction, please wait.'))
         vbox = QVBoxLayout()
         vbox.addWidget(l)
@@ -698,7 +698,7 @@ class MiniActuator:
 
         if dest_address is None or not is_valid(dest_address):
             QMessageBox.warning(parent_window, _('Error'),
-                _('Invalid Verge Address') + ':\n' + address, _('OK'))
+                _('Invalid Zclassic Address') + ':\n' + address, _('OK'))
             return False
 
         amount = D(unicode(amount)) * (10*self.g.decimal_point)

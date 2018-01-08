@@ -15,16 +15,17 @@ import interface
 from blockchain import Blockchain
 from collections import deque
 
+# tcp, tcp/tls, http, https
 DEFAULT_PORTS = {'t':'50001', 's':'50002', 'h':'8081', 'g':'8082'}
 
 DEFAULT_SERVERS = {
-    'electrum-verge.xyz':{'t':'50001', 's':'50002'},
-    'electrum-xvg.stream':{'t':'50001', 's':'50002'},
-    'electrum-xvg.party':{'t':'50001', 's':'50002'},
-    'e1.verge-electrum.com':{'t':'50001', 's':'50002'},
-    'e2.verge-electrum.com':{'t':'50001', 's':'50002'},
-    'e3.verge-electrum.com':{'t':'50001', 's':'50002'}
+  'electrum-zclassic.xyz':{'t':'50001', 's':'50002'},
+  'zclassic-electrum.xyz':{'t':'50001', 's':'50002'},
+  #'e1.verge-electrum.com':{'t':'50001', 's':'50002'},
+  #'e2.verge-electrum.com':{'t':'50001', 's':'50002'},
+  #'e3.verge-electrum.com':{'t':'50001', 's':'50002'}
 }
+
 
 NODES_RETRY_INTERVAL = 60
 SERVER_RETRY_INTERVAL = 10

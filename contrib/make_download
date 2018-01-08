@@ -15,17 +15,17 @@ string = string.replace("##VERSION_WIN##", version_win)
 string = string.replace("##VERSION_MAC##", version_mac)
 
 files = {
-    'tgz': "Electrum-XVG-%s.tar.gz" % version,
-    'zip': "Electrum-XVG-%s.zip" % version,
-    'mac': "electrum-xvg-%s.dmg" % version_mac,
-    'win': "electrum-xvg-%s.exe" % version_win,
-    'win_setup': "electrum-xvg-%s-setup.exe" % version_win,
-    'win_portable': "electrum-xvg-%s-portable.exe" % version_win,
+    'tgz': "Electrum-ZCL-%s.tar.gz" % version,
+    'zip': "Electrum-ZCL-%s.zip" % version,
+    'mac': "electrum-zcl-%s.dmg" % version_mac,
+    'win': "electrum-zcl-%s.exe" % version_win,
+    'win_setup': "electrum-zcl-%s-setup.exe" % version_win,
+    'win_portable': "electrum-zcl-%s-portable.exe" % version_win,
 }
 
 for k, n in files.items():
     path = "binaries/%s"%n
-    link = "https://github.com/vergecurrency/electrum-xvg/releases/download/%s"%n
+    link = "https://github.com/BTCP-community/electrum-zcl/releases/download/%s"%n
     if not os.path.exists(path):
         os.system("wget -q %s -O %s" % (link, path))
     if not os.path.getsize(path):

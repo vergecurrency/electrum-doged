@@ -16,12 +16,12 @@ set -e
 cd tmp
 
 # Download and unpack Electrum
-wget -O electrum-xvg.tgz "$ELECTRUM_URL"
+wget -O electrum-zcl.tgz "$ELECTRUM_URL"
 tar xf electrum.tgz
 mv Electrum-* electrum
-rm -rf $WINEPREFIX/drive_c/electrum-xvg
-cp electrum-xvg/LICENCE .
-mv electrum-xvg $WINEPREFIX/drive_c
+rm -rf $WINEPREFIX/drive_c/electrum-zcl
+cp electrum-zcl/LICENCE .
+mv electrum-zcl $WINEPREFIX/drive_c
 
 # Copy ZBar libraries to electrum
 #cp "$WINEPREFIX/drive_c/Program Files (x86)/ZBar/bin/"*.dll "$WINEPREFIX/drive_c/electrum/"
@@ -34,7 +34,7 @@ rm -f dist/$NAME_ROOT.exe
 rm -f dist/$NAME_ROOT-setup.exe
 
 # For building standalone compressed EXE, run:
-$PYTHON "C:/pyinstaller/pyinstaller.py" --noconfirm --ascii -w --onefile "C:/electrum-xvg/electrum-xvg"
+$PYTHON "C:/pyinstaller/pyinstaller.py" --noconfirm --ascii -w --onefile "C:/electrum-zcl/electrum-zcl"
 
 # For building uncompressed directory of dependencies, run:
 $PYTHON "C:/pyinstaller/pyinstaller.py" --noconfirm --ascii -w deterministic.spec
@@ -44,7 +44,7 @@ wine "$WINEPREFIX/drive_c/Program Files (x86)/NSIS/makensis.exe" electrum.nsi
 #wine $WINEPREFIX/drive_c/Program\ Files\ \(x86\)/NSIS/makensis.exe electrum.nsis
 
 cd dist
-mv electrum-xvg.exe $NAME_ROOT.exe
-mv electrum-xvg $NAME_ROOT
-mv electrum-xvg-setup.exe $NAME_ROOT-setup.exe
+mv electrum-zcl.exe $NAME_ROOT.exe
+mv electrum-zcl $NAME_ROOT
+mv electrum-zcl-setup.exe $NAME_ROOT-setup.exe
 zip -r $NAME_ROOT.zip $NAME_ROOT
