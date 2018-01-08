@@ -8,22 +8,23 @@ Electrum-ZCL - lightweight Zclassic client
 
 Licence: GNU GPL v3
 
-Authors: sunerok, bitspill & whit3water
+Authors: The Zclassic Team, sunerok, bitspill & whit3water
 
 Language: Python
+Platform: Linux, Windows, MacOS
 
 Homepage: http://zclassic.org/
 Special thanks to: http://electrum-verge.xyz/
 
 To get started, download the release, unzip, and click electrum-zcl.exe
 
-Don't forget to copy your randomly generated seedphrase, this will act as your private key.
+!! Don't forget to copy your randomly generated seedphrase, this will act as your private key !!
 
 They are not stored on our servers, so please don't lose them!
 
 
 
-1.a) GETTING STARTED WITH UBUNTU/LINUX
+GETTING STARTED - UBUNTU/LINUX
 ------------------
 sudo apt-get install git pyqt4-dev-tools python-pip python-dev python-slowaes
 
@@ -39,13 +40,17 @@ To run Electrum from this directory, just do:
 ---------------------------------------------
   ./electrum-zcl
 
-  (You may need to `mkdir ~/.electrum-zcl/ && touch ~/.electrum-zcl/log.txt`)
+You may need to also
+---------------------
+
+  `mkdir ~/.electrum-zcl/ && touch ~/.electrum-zcl/log.txt`
 
 To start Electrum from your web browser, see
 --------------------------------------------
 http://electrum-verge.xyz/Verge_URIs.html
+(Doesn't seem to work...)
 
-To update your copy of the electrum client:
+To update your copy of the Electrum client:
 -------------------------------------------
 cd electrum-zclassic
 
@@ -53,7 +58,7 @@ git pull
 
 sudo python setup.py install
 
-1.b) GETTING STARTED WITH WINDOWS
+GETTING STARTED - WINDOWS
 ------------------
 
 -download this repo as a zip and extract it to where you would like it to run from. 
@@ -76,8 +81,14 @@ py setup.py install
 py electrum-zcl
 
 
+Zclassic Electrum Server List:
+===========================
+electrum-zclassic.xyz
 
-2. HOW OFFICIAL PACKAGES ARE CREATED
+zclassic-ethereum.xyz
+
+
+HOW OFFICIAL PACKAGES ARE CREATED
 ------------------------------------
 
 python mki18n.py
@@ -120,10 +131,5 @@ pyinstaller macosx.spec
 
 sudo hdiutil create -fs HFS+ -volname "Zclassic Electrum" -srcfolder "dist/ZCLASSIC Electrum.app" dist/ZCLASSIC-electrum-$VERSION-mac.dmg
 
-Verge Electrum Server List:
-===========================
-electrum-zclassic.xyz
 
-electrum-zcl.stream
-
-[![Visit our IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=zcl|?&theme=cli#VERGE)
+[![Visit Verge's IRC Chat!](https://kiwiirc.com/buttons/irc.freenode.net/VERGE.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=zcl|?&theme=cli#VERGE)
