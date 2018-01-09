@@ -467,5 +467,9 @@ class StoreDict(dict):
             dict.pop(self, key)
             self.save()
 
-
+try:
+    os.makedirs(user_dir())
+except (IOError, OSError) as exception:
+    if exception.errno != errno.EEXIST:
+        raise
 sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
