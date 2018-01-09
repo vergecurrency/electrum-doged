@@ -468,4 +468,4 @@ class StoreDict(dict):
             self.save()
 
 
-sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
+#sys.stdout = sys.stderr = open(os.path.join(user_dir(), 'log.txt'), 'w')
