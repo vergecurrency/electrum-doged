@@ -32,6 +32,8 @@ pyrcc4 icons.qrc -o gui/qt/icons_rc.py
 
 sudo python setup.py install
 
+chmod +x ./electrum-xvg
+
 To run Electrum from this directory, just do:
 ---------------------------------------------
   ./electrum-xvg
