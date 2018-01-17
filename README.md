@@ -53,7 +53,7 @@ http://electrum-verge.xyz/Verge_URIs.html
 
 Navigate to the project folder:
 
-```cd electrum-verge```
+```cd electrum-xvg```
 
 Download the updates:
 
