@@ -29,6 +29,8 @@ Don't forget to copy your randomly generated seedphrase, this will act as your p
 
 
 
+
+
 ## Linux:
 
 ```
@@ -82,6 +84,8 @@ sudo python setup.py install
 
 
 
+
+
 ## Windows
 
 
@@ -125,6 +129,7 @@ python electrum-xvg
 
 
 
+
 ## How Official Packages Are Created.
 
 ```
@@ -146,6 +151,9 @@ ARCHFLAGS="-arch i386 -arch x86_64" sudo python setup-release.py py2app --includ
 
 sudo hdiutil create -fs HFS+ -volname "Electrum-XVG" -srcfolder dist/Electrum-XVG.app dist/electrum-xvg-VERSION-macosx.dmg
 ```
+
+
+
 
 
 
