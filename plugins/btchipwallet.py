@@ -382,7 +382,7 @@ class BTChipWallet(BIP32_HD_Wallet):
                 if not self.canAlternateCoinVersions:
                     v, h = bc_address_to_hash_160(address)
                     if v == 48:
-                        output = hash_160_to_bc_address(h, 0)
+                        output = hash_160_to_bc_address(h, 30)
                 outputAmount = amount
 
         self.get_client() # prompt for the PIN before displaying the dialog if necessary
