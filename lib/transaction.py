@@ -529,6 +529,7 @@ class Transaction:
         self.inputs = d['inputs']
         self.outputs = [(x['type'], x['address'], x['value']) for x in d['outputs']]
         self.locktime = d['lockTime']
+        self.time = d['nTime']
         return d
 
     @classmethod
